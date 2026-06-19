@@ -1,0 +1,4 @@
+# Data directory
+#
+# The Astram CSV lives at the project root: ../data/
+# Configure path via app/utils/config.py
