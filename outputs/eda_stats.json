@@ -1,0 +1,12 @@
+{
+  "total_events": 8173,
+  "date_min": "2023-11-09 19:24:48.154000+00:00",
+  "date_max": "2024-04-08 17:11:42.780000+00:00",
+  "top_event_type": "unplanned",
+  "top_event_type_count": 7706,
+  "top_cause": "vehicle_breakdown",
+  "top_zone": "Central Zone 2",
+  "pct_road_closure": 8.3,
+  "avg_duration": 4.88,
+  "num_clusters": 8
+}
