@@ -1,9 +1,15 @@
-import type { TriageRequest, TriageResponse } from "@/types";
+import api from "./api";
+import type { TriageRequest, TriageResponse } from "@/types/triage";
 
 const triageService = {
-  // TODO: POST to backend /api/triage
-  run: async (_req: TriageRequest): Promise<TriageResponse | null> => {
-    return null;
+  /** POST /api/triage */
+  run: async (req: TriageRequest): Promise<TriageResponse | null> => {
+    try {
+      const { data } = await api.post<TriageResponse>("/api/triage", req);
+      return data;
+    } catch {
+      return null;
+    }
   },
 };
 

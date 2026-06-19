@@ -1,26 +1,44 @@
-import type { TrafficEvent } from "@/types";
-
-export interface EventsFilter {
-  priority?: string | null;
-  cause?: string | null;
-  query?: string | null;
-}
+import api from "./api";
+import { FALLBACK_EVENTS } from "./fallbacks";
+import type { Event, EventsFilter } from "@/types/event";
 
 const eventsService = {
-  // TODO: Fetch from backend GET /api/events
-  getAll: async (_filters?: EventsFilter): Promise<TrafficEvent[]> => {
-    return [];
+  /** GET /api/events */
+  getAll: async (filters?: EventsFilter): Promise<Event[]> => {
+    try {
+      const { data } = await api.get<Event[]>("/api/events", {
+        params: {
+          priority: filters?.priority ?? undefined,
+          cause: filters?.cause ?? undefined,
+          q: filters?.query ?? undefined,
+        },
+      });
+      return data;
+    } catch {
+      return FALLBACK_EVENTS;
+    }
   },
 
-  // TODO: Fetch from backend GET /api/events/live-feed
-  getLiveFeed: async (): Promise<TrafficEvent[]> => {
-    return [];
+  /** GET /api/events?feed=live */
+  getLiveFeed: async (): Promise<Event[]> => {
+    try {
+      const { data } = await api.get<Event[]>("/api/events", { params: { feed: "live" } });
+      return data;
+    } catch {
+      return FALLBACK_EVENTS;
+    }
   },
 
-  // TODO: Fetch from backend GET /api/events/:id
-  getById: async (_id: string): Promise<TrafficEvent | null> => {
-    return null;
+  /** GET /api/events/:id */
+  getById: async (id: string): Promise<Event | null> => {
+    try {
+      const { data } = await api.get<Event>(`/api/events/${id}`);
+      return data;
+    } catch {
+      return null;
+    }
   },
 };
 
 export default eventsService;
+export type { EventsFilter };

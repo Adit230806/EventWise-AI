@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import eventsService, { type EventsFilter } from "@/services/eventsService";
+import eventsService from "@/services/eventsService";
+import type { EventsFilter } from "@/types/event";
 
 export function useEvents(filters?: EventsFilter) {
   return useQuery({

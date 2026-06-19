@@ -1,7 +1,8 @@
 import { TrafficMap } from "@/components/TrafficMap";
-import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useDashboard } from "@/hooks/useDashboard";
 import { useLiveFeed } from "@/hooks/useEvents";
 import { useHotspots } from "@/hooks/useHotspots";
+import { useMapEvents } from "@/hooks/useMapEvents";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCommandStore, priorityHex } from "@/lib/store";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,8 +40,9 @@ export function CommandCenter() {
   const { showRoutes, showAlerts, showHotspots, toggleRoutes, toggleAlerts, toggleHotspots, setDrawerEvent } =
     useCommandStore();
 
-  const { data: stats, isLoading: statsLoading, error: statsError, refetch: statsRefetch } = useDashboardStats();
+  const { data: stats, isLoading: statsLoading, error: statsError, refetch: statsRefetch } = useDashboard();
   const { data: liveFeedData, isLoading: feedLoading, error: feedError, refetch: feedRefetch } = useLiveFeed();
+  const { data: mapEvents } = useMapEvents();
   const { data: hotspotsData, isLoading: hotspotsLoading, error: hotspotsError, refetch: hotspotsRefetch } = useHotspots();
 
   return (
@@ -48,7 +50,7 @@ export function CommandCenter() {
       {/* MAP */}
       <div className="absolute inset-0">
         <TrafficMap
-          events={liveFeedData ?? []}
+          events={mapEvents ?? liveFeedData ?? []}
           onSelect={setDrawerEvent}
           showHotspots={showHotspots}
           showRoutes={showRoutes}

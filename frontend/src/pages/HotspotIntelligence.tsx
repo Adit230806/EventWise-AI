@@ -1,13 +1,13 @@
 import { TrafficMap } from "@/components/TrafficMap";
 import { useHotspots } from "@/hooks/useHotspots";
-import { useEvents } from "@/hooks/useEvents";
+import { useMapEvents } from "@/hooks/useMapEvents";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle, Flame, GitBranch, Radar, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function HotspotIntelligence() {
   const { data: hotspotsData, isLoading: hotspotsLoading, error: hotspotsError, refetch: hotspotsRefetch } = useHotspots();
-  const { data: eventsData } = useEvents();
+  const { data: eventsData } = useMapEvents();
 
   return (
     <div className="grid h-full grid-cols-1 overflow-hidden lg:grid-cols-[1fr_360px]">

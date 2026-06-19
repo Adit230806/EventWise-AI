@@ -1,17 +1,16 @@
-import type { EventAnalyticsData } from "@/types";
-
-const emptyAnalytics: EventAnalyticsData = {
-  causeBreakdown: [],
-  priorityBreakdown: [],
-  hourlyTrend: [],
-  weeklyTrend: [],
-  zoneIntelligence: [],
-};
+import api from "./api";
+import { FALLBACK_ANALYTICS } from "./fallbacks";
+import type { AnalyticsResponse } from "@/types/analytics";
 
 const analyticsService = {
-  // TODO: Fetch from backend GET /api/analytics
-  get: async (): Promise<EventAnalyticsData | null> => {
-    return emptyAnalytics;
+  /** GET /api/analytics */
+  get: async (): Promise<AnalyticsResponse> => {
+    try {
+      const { data } = await api.get<AnalyticsResponse>("/api/analytics");
+      return data;
+    } catch {
+      return FALLBACK_ANALYTICS;
+    }
   },
 };
 
