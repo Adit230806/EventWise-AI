@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "source_csv": "Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv",
+  "rows": 8057,
+  "rows_dropped_null_timestamp": 116,
+  "feature_columns": [
+    "event_type",
+    "event_cause",
+    "corridor",
+    "veh_type",
+    "geo_cluster",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "latitude",
+    "longitude"
+  ],
+  "target_columns": {
+    "y_priority": {
+      "type": "binary",
+      "mapping": {
+        "High": 1,
+        "Low": 0
+      },
+      "note": "2 rows with null priority encoded as 0"
+    },
+    "y_closure": {
+      "type": "binary",
+      "mapping": {
+        "True": 1,
+        "False": 0
+      }
+    }
+  },
+  "categorical_features": [
+    "event_type",
+    "event_cause",
+    "corridor",
+    "veh_type"
+  ],
+  "numeric_features": [
+    "geo_cluster",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "latitude",
+    "longitude"
+  ],
+  "missing_value_plan": {
+    "zone": {
+      "missing_pct": 57.9,
+      "decision": "Impute from geo_cluster mode mapping after cluster assignment; fallback 'unknown_zone'",
+      "column_used": "zone_imputed"
+    },
+    "veh_type": {
+      "missing_pct": 40.2,
+      "decision": "Fill with literal category 'unknown'",
+      "column_used": "veh_type"
+    },
+    "junction": {
+      "missing_pct": 69.3,
+      "decision": "Fill with 'unknown' — optional feature, excluded from X v1",
+      "column_used": "junction (excluded from X v1)"
+    },
+    "corridor": {
+      "missing_pct": 0.2,
+      "decision": "Fill with 'Unknown Corridor'",
+      "column_used": "corridor"
+    }
+  },
+  "geo_cluster_source": "cluster_centers.csv",
+  "split_strategy": {
+    "type": "time_based",
+    "test_days": 28,
+    "cutoff_utc": "2024-03-11 17:11:42.780000+00:00",
+    "train_rows": 6227,
+    "test_rows": 1830
+  },
+  "class_balance": {
+    "y_priority_high_pct": 61.74,
+    "y_closure_true_pct": 7.4
+  },
+  "X_shape": [
+    8173,
+    10
+  ],
+  "ml_ready_shape": [
+    8057,
+    18
+  ]
+}

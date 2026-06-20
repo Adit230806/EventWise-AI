@@ -134,7 +134,9 @@ export function AITriage() {
                     {result.priorityLabel}
                   </span>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">Priority score with 91% model confidence.</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Priority score with {result.priorityScore}% model confidence.
+                </p>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
