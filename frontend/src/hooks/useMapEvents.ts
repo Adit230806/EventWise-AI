@@ -5,5 +5,7 @@ export function useMapEvents() {
   return useQuery({
     queryKey: ["map-events"],
     queryFn: () => mapService.getMapEvents(),
+    staleTime: 30_000,
+    retry: 2,
   });
 }

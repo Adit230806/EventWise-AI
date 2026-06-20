@@ -1,11 +1,12 @@
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import React from "react";
 import {
   BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, AreaChart, Area, CartesianGrid,
   RadialBarChart, RadialBar, PolarAngleAxis,
 } from "recharts";
-import { Activity, Sparkles, TrendingUp, AlertTriangle } from "lucide-react";
+import { Activity, Sparkles, TrendingUp, AlertTriangle, type LucideIcon } from "lucide-react";
 import { priorityHex } from "@/lib/store";
 
 const tooltipStyle = {
@@ -34,7 +35,11 @@ export function AnalyticsCenter() {
           <AlertTriangle className="mx-auto h-8 w-8 text-destructive" />
           <p className="mt-3 font-semibold text-foreground">Failed to load analytics data</p>
           <p className="mt-1 text-xs">API unavailable</p>
-          <button onClick={() => refetch()} className="mt-4 rounded-lg border border-border px-4 py-2 text-xs hover:bg-surface-elevated">Retry</button>
+      <button
+        onClick={() => refetch()}
+        aria-label="Retry loading analytics"
+        className="mt-4 rounded-lg border border-border px-4 py-2 text-xs hover:bg-surface-elevated"
+      >Retry</button>
         </div>
       </div>
     );
@@ -60,7 +65,7 @@ export function AnalyticsCenter() {
         <Card span={8} title="Hourly Event Volume" sub="Live ingestion vs. critical">
           {isLoading ? (
             <Skeleton className="h-[260px] w-full rounded-xl" />
-          ) : data === null ? (
+          ) : !data ? (
             <div className="grid h-[260px] place-items-center text-xs text-muted-foreground">Waiting for analytics data</div>
           ) : (
             <ResponsiveContainer width="100%" height={260}>
@@ -90,7 +95,7 @@ export function AnalyticsCenter() {
         <Card span={4} title="Priority Mix" sub="Active distribution">
           {isLoading ? (
             <Skeleton className="h-[260px] w-full rounded-xl" />
-          ) : data === null ? (
+          ) : !data ? (
             <div className="grid h-[260px] place-items-center text-xs text-muted-foreground">Waiting for analytics data</div>
           ) : (
             <>
@@ -118,7 +123,7 @@ export function AnalyticsCenter() {
         <Card span={6} title="Event Cause Analysis" sub="Frequency by classification">
           {isLoading ? (
             <Skeleton className="h-[260px] w-full rounded-xl" />
-          ) : data === null ? (
+          ) : !data ? (
             <div className="grid h-[260px] place-items-center text-xs text-muted-foreground">Waiting for analytics data</div>
           ) : (
             <ResponsiveContainer width="100%" height={260}>
@@ -137,7 +142,7 @@ export function AnalyticsCenter() {
         <Card span={6} title="Weekly Operations" sub="Resolved vs active events">
           {isLoading ? (
             <Skeleton className="h-[260px] w-full rounded-xl" />
-          ) : data === null ? (
+          ) : !data ? (
             <div className="grid h-[260px] place-items-center text-xs text-muted-foreground">Waiting for analytics data</div>
           ) : (
             <ResponsiveContainer width="100%" height={260}>
@@ -157,7 +162,7 @@ export function AnalyticsCenter() {
         <Card span={12} title="Zone Intelligence" sub="Event load × risk score">
           {isLoading ? (
             <Skeleton className="h-[260px] w-full rounded-xl" />
-          ) : data === null ? (
+          ) : !data ? (
             <div className="grid h-[260px] place-items-center text-xs text-muted-foreground">Waiting for analytics data</div>
           ) : (
             <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
@@ -183,7 +188,13 @@ export function AnalyticsCenter() {
   );
 }
 
-function Insight({ tone, label, value, change, icon: Icon }: any) {
+function Insight({ tone, label, value, change, icon: Icon }: {
+  tone: "lime" | "cyan" | "orange" | "red";
+  label: string;
+  value: string;
+  change: string;
+  icon: LucideIcon;
+}) {
   const color = tone === "lime" ? "#bef264" : tone === "cyan" ? "#22d3ee" : tone === "orange" ? "#ff9533" : "#ff4d4d";
   return (
     <motion.div

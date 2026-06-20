@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useEvents } from "@/hooks/useEvents";
 import type { TrafficEvent } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -41,21 +41,29 @@ export function EventExplorer() {
             </div>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight">Event Explorer</h1>
           </div>
-          <button className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground">
+          <button
+            aria-label="Export events as CSV"
+            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground"
+          >
             <Download className="h-3.5 w-3.5" /> Export CSV
           </button>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <div className="flex h-10 w-full max-w-md items-center gap-2 rounded-lg border border-border bg-input/40 px-3 text-sm">
             <Search className="h-4 w-4 text-muted-foreground" />
-            <input
+          <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search by code, cause, zone…"
+              aria-label="Search events by code, cause, or zone"
               className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
             {q && (
-              <button onClick={() => setQ("")} className="text-muted-foreground hover:text-foreground">
+              <button
+                onClick={() => setQ("")}
+                aria-label="Clear search"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
@@ -66,6 +74,8 @@ export function EventExplorer() {
               <button
                 key={p}
                 onClick={() => setActivePriority(activePriority === p ? null : p)}
+                aria-label={`Filter by ${p} priority`}
+                aria-pressed={activePriority === p}
                 className="rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wider transition-all"
                 style={{
                   borderColor: activePriority === p ? priorityHex(p) : "var(--color-border)",
@@ -135,17 +145,44 @@ export function EventExplorer() {
 
 function CauseDropdown({ active, onChange }: { active: string | null; onChange: (v: string | null) => void }) {
   const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [open]);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!open) return;
+    function handle(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", handle);
+    return () => document.removeEventListener("keydown", handle);
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`Filter by cause: ${active ?? "all"}`}
         className="flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground"
       >
         Cause: {active ?? "all"} <ChevronDown className="h-3 w-3" />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-52 rounded-lg border border-border bg-popover p-1 shadow-xl">
+        <div role="listbox" aria-label="Filter by cause" className="absolute left-0 top-full z-50 mt-1 w-52 rounded-lg border border-border bg-popover p-1 shadow-xl">
           <button
+            role="option"
+            aria-selected={active === null}
             onClick={() => { onChange(null); setOpen(false); }}
             className="w-full rounded px-2 py-1.5 text-left text-xs text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
           >
@@ -154,6 +191,8 @@ function CauseDropdown({ active, onChange }: { active: string | null; onChange: 
           {CAUSES.map((c) => (
             <button
               key={c}
+              role="option"
+              aria-selected={active === c}
               onClick={() => { onChange(c); setOpen(false); }}
               className="w-full rounded px-2 py-1.5 text-left text-xs text-foreground hover:bg-surface-elevated"
             >

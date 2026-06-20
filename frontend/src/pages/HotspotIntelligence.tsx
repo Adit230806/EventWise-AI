@@ -2,8 +2,9 @@ import { TrafficMap } from "@/components/TrafficMap";
 import { useHotspots } from "@/hooks/useHotspots";
 import { useMapEvents } from "@/hooks/useMapEvents";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, Flame, GitBranch, Radar, TrendingUp } from "lucide-react";
+import { AlertTriangle, Flame, GitBranch, Radar, TrendingUp, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 export function HotspotIntelligence() {
   const { data: hotspotsData, isLoading: hotspotsLoading, error: hotspotsError, refetch: hotspotsRefetch } = useHotspots();
@@ -48,7 +49,11 @@ export function HotspotIntelligence() {
               <div className="rounded-xl border border-border p-4 text-center text-xs text-muted-foreground">
                 <AlertTriangle className="mx-auto h-6 w-6 text-destructive mb-2" />
                 <p className="font-semibold text-foreground">Failed to load hotspot data</p>
-                <button onClick={() => hotspotsRefetch()} className="mt-2 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated">Retry</button>
+                <button
+                  onClick={() => hotspotsRefetch()}
+                  aria-label="Retry loading hotspot data"
+                  className="mt-2 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
+                >Retry</button>
               </div>
             ) : hotspotRows.length === 0 && !hotspotsLoading ? (
               <div className="p-4 text-center text-xs text-muted-foreground">No hotspot data available</div>
@@ -95,7 +100,12 @@ export function HotspotIntelligence() {
   );
 }
 
-function Section({ icon: Icon, title, sub, children }: any) {
+function Section({ icon: Icon, title, sub, children }: {
+  icon: LucideIcon;
+  title: string;
+  sub: string;
+  children: ReactNode;
+}) {
   return (
     <div className="mb-6">
       <div className="mb-2 flex items-center gap-2">

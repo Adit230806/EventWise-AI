@@ -28,6 +28,8 @@ export function AppShell() {
                 <Link
                   key={item.to}
                   to={item.to}
+                  aria-label={item.label}
+                  aria-current={active ? "page" : undefined}
                   className="group relative grid h-11 w-11 place-items-center rounded-xl text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
                 >
                   {active && (
@@ -47,10 +49,10 @@ export function AppShell() {
           </nav>
         </div>
         <div className="flex flex-col items-center gap-1.5">
-          <button className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
+          <button aria-label="Help" className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
             <HelpCircle className="h-[18px] w-[18px]" />
           </button>
-          <button className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
+          <button aria-label="Settings" className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
             <Settings className="h-[18px] w-[18px]" />
           </button>
         </div>
@@ -96,18 +98,19 @@ function TopBar() {
       </div>
       <div className="flex flex-1 items-center justify-center">
         <div className="flex h-9 w-full max-w-md items-center gap-2 rounded-lg border border-border bg-input/40 px-3 text-sm text-muted-foreground">
-          <Search className="h-3.5 w-3.5" />
+          <Search className="h-3.5 w-3.5" aria-hidden="true" />
           <input
+            aria-label="Search events, zones, vehicles"
             className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
             placeholder="Search events, zones, vehicles…"
           />
-          <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">⌘K</kbd>
+          <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground" aria-label="Keyboard shortcut Command K">⌘K</kbd>
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <button className="relative grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface/60 text-muted-foreground hover:text-foreground">
+        <button aria-label="Notifications — 9 unread" className="relative grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface/60 text-muted-foreground hover:text-foreground">
           <Bell className="h-4 w-4" />
-          <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">9</span>
+          <span aria-hidden="true" className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">9</span>
         </button>
         <div className="flex items-center gap-2.5 rounded-lg border border-border bg-surface/60 px-2.5 py-1">
           <div className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 text-xs font-semibold text-primary">AK</div>

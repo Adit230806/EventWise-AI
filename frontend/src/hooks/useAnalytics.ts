@@ -5,5 +5,7 @@ export function useAnalytics() {
   return useQuery({
     queryKey: ["analytics"],
     queryFn: () => analyticsService.get(),
+    staleTime: 30_000,
+    retry: 2,
   });
 }

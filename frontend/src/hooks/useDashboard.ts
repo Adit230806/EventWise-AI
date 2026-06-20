@@ -5,6 +5,8 @@ export function useDashboard() {
   return useQuery({
     queryKey: ["dashboard", "stats"],
     queryFn: () => dashboardService.getStats(),
+    staleTime: 30_000,
+    retry: 2,
   });
 }
 
