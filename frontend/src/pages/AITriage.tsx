@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Sparkles, Zap, Target, AlertTriangle, Flame, ArrowRight, Loader2 } from "lucide-react";
 import { useTriage } from "@/hooks/useTriage";
 import type { TriageResponse } from "@/types";
+import { toast } from "sonner";
 
 // TODO: fetch from /api/config
 const eventTypes = ["Incident", "Planned Event", "Weather Event", "Infrastructure"];
@@ -31,6 +32,22 @@ export function AITriage() {
   const triage = useTriage();
 
   function run() {
+    const latNum = parseFloat(form.lat);
+    const lngNum = parseFloat(form.lng);
+
+    if (isNaN(latNum) || latNum < -90 || latNum > 90) {
+      toast.error("Invalid latitude. Must be a number between -90 and 90.");
+      return;
+    }
+    if (isNaN(lngNum) || lngNum < -180 || lngNum > 180) {
+      toast.error("Invalid longitude. Must be a number between -180 and 180.");
+      return;
+    }
+    if (!form.time) {
+      toast.error("Please provide a valid time.");
+      return;
+    }
+
     triage.mutate(form);
   }
 
@@ -189,31 +206,35 @@ export function AITriage() {
 }
 
 function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+  const id = useId();
   return (
-    <label className="block">
-      <div className="mb-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+    <div className="block">
+      <label htmlFor={id} className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</label>
       <input
+        id={id}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-lg border border-border bg-input/40 px-3 py-2 text-sm text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
       />
-    </label>
+    </div>
   );
 }
 
 function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+  const id = useId();
   return (
-    <label className="block">
-      <div className="mb-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+    <div className="block">
+      <label htmlFor={id} className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</label>
       <select
+        id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-lg border border-border bg-input/40 px-3 py-2 text-sm text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
       >
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
-    </label>
+    </div>
   );
 }
 

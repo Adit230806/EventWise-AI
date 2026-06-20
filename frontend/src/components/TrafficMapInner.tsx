@@ -1,5 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, ZoomControl } from "react-leaflet";
 import L from "leaflet";
+import React from "react";
 import type { TrafficEvent } from "@/types";
 import { priorityHex } from "@/lib/store";
 
@@ -24,7 +25,7 @@ const makeIcon = (color: string, pulse: boolean) =>
     </div>`,
   });
 
-export default function TrafficMapInner({
+export default React.memo(function TrafficMapInner({
   events,
   onSelect,
   showHotspots = true,
@@ -104,4 +105,4 @@ export default function TrafficMapInner({
       ))}
     </MapContainer>
   );
-}
+});

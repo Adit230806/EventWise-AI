@@ -79,6 +79,7 @@ export function CommandCenter() {
               <span>Failed to load stats</span>
               <button
                 onClick={() => statsRefetch()}
+                aria-label="Retry loading stats"
                 className="ml-1 underline underline-offset-2 hover:text-foreground"
               >
                 Retry
@@ -130,6 +131,7 @@ export function CommandCenter() {
                 <p className="mt-2 text-xs font-semibold text-foreground">Failed to load feed</p>
                 <button
                   onClick={() => feedRefetch()}
+                  aria-label="Retry loading feed"
                   className="mt-3 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
                 >
                   Retry
@@ -277,6 +279,7 @@ export function CommandCenter() {
                 <p className="mt-2 text-xs font-semibold text-foreground">Failed to load hotspots</p>
                 <button
                   onClick={() => hotspotsRefetch()}
+                  aria-label="Retry loading hotspots"
                   className="mt-3 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
                 >
                   Retry
@@ -368,10 +371,13 @@ function ToggleSwitch({ label, on, onClick }: { label: string; on: boolean; onCl
   return (
     <button
       onClick={onClick}
+      role="switch"
+      aria-checked={on}
+      aria-label={`Toggle ${label}`}
       className="flex items-center gap-2 rounded-full glass-pill px-3 py-1.5 text-xs"
     >
-      <span className="uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
-      <span className={`relative h-4 w-7 rounded-full transition-colors ${on ? "bg-primary" : "bg-muted"}`}>
+      <span className="uppercase tracking-[0.14em] text-muted-foreground" aria-hidden="true">{label}</span>
+      <span className={`relative h-4 w-7 rounded-full transition-colors ${on ? "bg-primary" : "bg-muted"}`} aria-hidden="true">
         <span
           className="absolute top-0.5 h-3 w-3 rounded-full bg-background transition-all"
           style={{ left: on ? "14px" : "2px" }}
@@ -499,6 +505,7 @@ function EventDrawer() {
                 </div>
                 <button
                   onClick={() => setDrawerEvent(null)}
+                  aria-label="Close event details"
                   className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
                 >
                   Close
