@@ -5,13 +5,29 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { priorityHex } from "@/lib/store";
 import { getIncidentImage } from "@/lib/incidentImages";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, MapPin, Clock, ChevronDown, Sparkles, Download, X, AlertTriangle } from "lucide-react";
+import {
+  Search,
+  Filter,
+  MapPin,
+  Clock,
+  ChevronDown,
+  Sparkles,
+  Download,
+  X,
+  AlertTriangle,
+} from "lucide-react";
 
 const priorities = ["critical", "high", "medium", "low"];
 
 const CAUSES = [
-  "Vehicle Breakdown", "Accident", "Construction", "Water Logging",
-  "Tree Fall", "Signal Failure", "Protest", "VIP Movement"
+  "Vehicle Breakdown",
+  "Accident",
+  "Construction",
+  "Water Logging",
+  "Tree Fall",
+  "Signal Failure",
+  "Protest",
+  "VIP Movement",
 ] as const;
 
 export function EventExplorer() {
@@ -26,7 +42,8 @@ export function EventExplorer() {
     return allEvents.filter((e) => {
       if (activePriority && e.priority !== activePriority) return false;
       if (activeCause && e.cause !== activeCause) return false;
-      if (q && !`${e.code} ${e.cause} ${e.zone}`.toLowerCase().includes(q.toLowerCase())) return false;
+      if (q && !`${e.code} ${e.cause} ${e.zone}`.toLowerCase().includes(q.toLowerCase()))
+        return false;
       return true;
     });
   }, [allEvents, q, activePriority, activeCause]);
@@ -106,7 +123,12 @@ export function EventExplorer() {
               <AlertTriangle className="mx-auto h-8 w-8 text-destructive" />
               <p className="mt-3 font-semibold text-foreground">Failed to load events</p>
               <p className="mt-1 text-xs">API unavailable</p>
-              <button onClick={() => refetch()} className="mt-4 rounded-lg border border-border px-4 py-2 text-xs hover:bg-surface-elevated">Retry</button>
+              <button
+                onClick={() => refetch()}
+                className="mt-4 rounded-lg border border-border px-4 py-2 text-xs hover:bg-surface-elevated"
+              >
+                Retry
+              </button>
             </div>
           </div>
         ) : !activePriority && !activeCause && !q && allEvents.length === 0 ? (
@@ -144,7 +166,13 @@ export function EventExplorer() {
   );
 }
 
-function CauseDropdown({ active, onChange }: { active: string | null; onChange: (v: string | null) => void }) {
+function CauseDropdown({
+  active,
+  onChange,
+}: {
+  active: string | null;
+  onChange: (v: string | null) => void;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -180,11 +208,18 @@ function CauseDropdown({ active, onChange }: { active: string | null; onChange: 
         Cause: {active ?? "all"} <ChevronDown className="h-3 w-3" />
       </button>
       {open && (
-        <div role="listbox" aria-label="Filter by cause" className="absolute left-0 top-full z-50 mt-1 w-52 rounded-lg border border-border bg-popover p-1 shadow-xl">
+        <div
+          role="listbox"
+          aria-label="Filter by cause"
+          className="absolute left-0 top-full z-50 mt-1 w-52 rounded-lg border border-border bg-popover p-1 shadow-xl"
+        >
           <button
             role="option"
             aria-selected={active === null}
-            onClick={() => { onChange(null); setOpen(false); }}
+            onClick={() => {
+              onChange(null);
+              setOpen(false);
+            }}
             className="w-full rounded px-2 py-1.5 text-left text-xs text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
           >
             All causes
@@ -194,7 +229,10 @@ function CauseDropdown({ active, onChange }: { active: string | null; onChange: 
               key={c}
               role="option"
               aria-selected={active === c}
-              onClick={() => { onChange(c); setOpen(false); }}
+              onClick={() => {
+                onChange(c);
+                setOpen(false);
+              }}
               className="w-full rounded px-2 py-1.5 text-left text-xs text-foreground hover:bg-surface-elevated"
             >
               {c}
@@ -226,7 +264,15 @@ function IncidentBanner({ cause }: { cause: string }) {
   );
 }
 
-function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boolean; onToggle: () => void }) {
+function EventCard({
+  e,
+  expanded,
+  onToggle,
+}: {
+  e: TrafficEvent;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   return (
     <motion.button
       layout
@@ -235,7 +281,9 @@ function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boole
     >
       <div className="flex items-start justify-between">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{e.code}</div>
+          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            {e.code}
+          </div>
           <div className="mt-0.5 text-base font-semibold text-foreground">{e.cause}</div>
         </div>
         <span
@@ -246,8 +294,12 @@ function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boole
         </span>
       </div>
       <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {e.zone}</span>
-        <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {e.eta}</span>
+        <span className="flex items-center gap-1">
+          <MapPin className="h-3 w-3" /> {e.zone}
+        </span>
+        <span className="flex items-center gap-1">
+          <Clock className="h-3 w-3" /> {e.eta}
+        </span>
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <Mini label="Closure" value={`${Math.round(e.closureRisk * 100)}%`} />
@@ -278,7 +330,9 @@ function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boole
 function Mini({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border border-border bg-background/40 py-1.5">
-      <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
       <div className="font-mono text-xs font-semibold text-foreground">{value}</div>
     </div>
   );

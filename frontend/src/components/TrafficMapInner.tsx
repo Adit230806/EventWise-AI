@@ -1,4 +1,12 @@
-import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, ZoomControl } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  Polyline,
+  ZoomControl,
+} from "react-leaflet";
 import L from "leaflet";
 import React from "react";
 import type { TrafficEvent } from "@/types";
@@ -34,9 +42,15 @@ export default React.memo(function TrafficMapInner({
   zoom = 12,
 }: Props) {
   return (
-    <MapContainer center={center} zoom={zoom} zoomControl={false} className="h-full w-full" preferCanvas>
+    <MapContainer
+      center={center}
+      zoom={zoom}
+      zoomControl={false}
+      className="h-full w-full"
+      preferCanvas
+    >
       <TileLayer
-        attribution='&copy; OpenStreetMap'
+        attribution="&copy; OpenStreetMap"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <ZoomControl position="bottomright" />
@@ -86,16 +100,44 @@ export default React.memo(function TrafficMapInner({
         >
           <Popup>
             <div style={{ minWidth: 220 }}>
-              <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, opacity: 0.55, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <div
+                style={{
+                  fontFamily: "JetBrains Mono, monospace",
+                  fontSize: 10,
+                  opacity: 0.55,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                }}
+              >
                 {e.code}
               </div>
               <div style={{ marginTop: 4, fontSize: 14, fontWeight: 600 }}>{e.cause}</div>
               <div style={{ marginTop: 2, fontSize: 12, opacity: 0.7 }}>{e.zone}</div>
               <div style={{ marginTop: 8, display: "flex", gap: 6 }}>
-                <span style={{ background: priorityHex(e.priority), color: "#000", padding: "2px 8px", borderRadius: 999, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                <span
+                  style={{
+                    background: priorityHex(e.priority),
+                    color: "#000",
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
                   {e.priority}
                 </span>
-                <span style={{ border: "1px solid rgba(255,255,255,0.15)", padding: "2px 8px", borderRadius: 999, fontSize: 10, opacity: 0.75, textTransform: "uppercase" }}>
+                <span
+                  style={{
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    fontSize: 10,
+                    opacity: 0.75,
+                    textTransform: "uppercase",
+                  }}
+                >
                   {e.status}
                 </span>
               </div>

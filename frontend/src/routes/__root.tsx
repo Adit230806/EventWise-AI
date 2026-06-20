@@ -78,9 +78,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "EventWise AI — Traffic Command Center" },
-      { name: "description", content: "Real-time traffic operations, AI triage, and hotspot intelligence for city-scale incident response." },
+      {
+        name: "description",
+        content:
+          "Real-time traffic operations, AI triage, and hotspot intelligence for city-scale incident response.",
+      },
       { property: "og:title", content: "EventWise AI — Traffic Command Center" },
-      { property: "og:description", content: "Real-time traffic operations, AI triage, and hotspot intelligence for city-scale incident response." },
+      {
+        property: "og:description",
+        content:
+          "Real-time traffic operations, AI triage, and hotspot intelligence for city-scale incident response.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -95,7 +103,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,

@@ -105,24 +105,43 @@ def get_analytics(days: int = 7) -> EventAnalyticsData:
         zone_stats = []
         for zone, group in grouped:
             count = len(group)
-            high_ratio = (
-                group.apply(
-                    lambda row: map_priority(
-                        row.get("priority"),
-                        requires_closure=bool(row.get("requires_road_closure", False)),
-                    )
-                    in ("critical", "high"),
-                    axis=1,
-                ).mean()
+            priority_labels = group.apply(
+                lambda row: map_priority(
+                    row.get("priority"),
+                    requires_closure=bool(row.get("requires_road_closure", False)),
+                ),
+                axis=1,
             )
-            closure_ratio = group["requires_road_closure"].fillna(False).astype(bool).mean()
-            risk = int(min(100, round(count * 2.5 + high_ratio * 45 + closure_ratio * 25)))
-            zone_stats.append((str(zone), count, risk))
+            high_ratio = float((priority_labels.isin(["critical", "high"])).mean())
+            closure_ratio = float(group["requires_road_closure"].fillna(False).astype(bool).mean())
+            # Raw composite score — will be normalised below so only the top zone reaches 100
+            raw_score = count * 2.5 + high_ratio * 45 + closure_ratio * 25
+            zone_stats.append((str(zone), count, raw_score))
+
+        # Sort by raw score descending, take top 10
         zone_stats.sort(key=lambda item: item[2], reverse=True)
-        zone_items = [
-            ZoneIntelligenceItem(zone=zone, events=count, risk=risk)
-            for zone, count, risk in zone_stats[:10]
-        ]
+        zone_stats = zone_stats[:10]
+
+        # Normalise: scale raw scores so the highest zone = 100, others proportionally lower.
+        # Add a small stagger offset so tied raw scores still produce distinct rounded values.
+        if zone_stats:
+            max_raw = zone_stats[0][2]
+            normalised = []
+            for idx, (zone, count, raw) in enumerate(zone_stats):
+                if max_raw > 0:
+                    # Stagger: subtract a small per-rank offset to break ties at the top
+                    stagger = idx * 1.5
+                    norm = max(0.0, (raw / max_raw) * 100 - stagger)
+                else:
+                    norm = 0.0
+                # Round to nearest integer, ensure top zone is exactly 100
+                risk = 100 if idx == 0 else max(1, min(99, round(norm)))
+                normalised.append((zone, count, risk))
+
+            zone_items = [
+                ZoneIntelligenceItem(zone=zone, events=count, risk=risk)
+                for zone, count, risk in normalised
+            ]
 
     return EventAnalyticsData(
         causeBreakdown=cause_breakdown,

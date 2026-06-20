@@ -37,18 +37,26 @@ export const useCommandStore = create<CommandState>((set) => ({
 
 export const priorityColor = (p: string) => {
   switch (p) {
-    case "critical": return "var(--color-neon-red)";
-    case "high": return "var(--color-neon-orange)";
-    case "medium": return "var(--color-neon-cyan)";
-    default: return "var(--color-neon-lime)";
+    case "critical":
+      return "var(--color-neon-red)";
+    case "high":
+      return "var(--color-neon-orange)";
+    case "medium":
+      return "var(--color-neon-cyan)";
+    default:
+      return "var(--color-neon-lime)";
   }
 };
 
 export const priorityHex = (p: string) => {
   switch (p) {
-    case "critical": return "#ff4d4d";
-    case "high": return "#ff9533";
-    case "medium": return "#22d3ee";
-    default: return "#bef264";
+    case "critical":
+      return "#ff4d4d";
+    case "high":
+      return "#ff9533";
+    case "medium":
+      return "#22d3ee";
+    default:
+      return "#bef264";
   }
 };

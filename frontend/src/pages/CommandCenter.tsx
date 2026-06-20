@@ -38,13 +38,35 @@ const causeIcon: Record<string, LucideIcon> = {
 };
 
 export function CommandCenter() {
-  const { showRoutes, showAlerts, showHotspots, toggleRoutes, toggleAlerts, toggleHotspots, setDrawerEvent } =
-    useCommandStore();
+  const {
+    showRoutes,
+    showAlerts,
+    showHotspots,
+    toggleRoutes,
+    toggleAlerts,
+    toggleHotspots,
+    setDrawerEvent,
+  } = useCommandStore();
 
-  const { data: stats, isLoading: statsLoading, error: statsError, refetch: statsRefetch } = useDashboard();
-  const { data: liveFeedData, isLoading: feedLoading, error: feedError, refetch: feedRefetch } = useLiveFeed();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    error: statsError,
+    refetch: statsRefetch,
+  } = useDashboard();
+  const {
+    data: liveFeedData,
+    isLoading: feedLoading,
+    error: feedError,
+    refetch: feedRefetch,
+  } = useLiveFeed();
   const { data: mapEvents } = useMapEvents();
-  const { data: hotspotsData, isLoading: hotspotsLoading, error: hotspotsError, refetch: hotspotsRefetch } = useHotspots();
+  const {
+    data: hotspotsData,
+    isLoading: hotspotsLoading,
+    error: hotspotsError,
+    refetch: hotspotsRefetch,
+  } = useHotspots();
 
   const liveFeed = Array.isArray(liveFeedData) ? liveFeedData : [];
   const hotspotRows = Array.isArray(hotspotsData) ? hotspotsData : [];
@@ -166,13 +188,15 @@ export function CommandCenter() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="truncate text-sm font-semibold text-foreground">{e.cause}</span>
+                      <span className="truncate text-sm font-semibold text-foreground">
+                        {e.cause}
+                      </span>
                       <PriorityChip p={e.priority} />
                     </div>
                     <div className="mt-0.5 truncate text-xs text-muted-foreground">{e.zone}</div>
                     <div className="mt-1.5 flex items-center justify-between">
                       <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      <TimeAgo iso={e.createdAt} />
+                        <TimeAgo iso={e.createdAt} />
                       </span>
                       <span className="flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary opacity-0 transition-opacity group-hover:opacity-100">
                         Dispatch <ChevronRight className="h-3 w-3" />
@@ -228,8 +252,9 @@ export function CommandCenter() {
             <span className="uppercase tracking-[0.18em]">Recommended Action</span>
           </div>
           <p className="mt-2 text-sm leading-relaxed text-foreground">
-            <span className="font-semibold text-primary">Pre-empt signal cycle</span> at Hebbal Junction and divert
-            northbound freight via <span className="font-mono text-xs">ORR-N → NH-44</span>. Expected congestion drop
+            <span className="font-semibold text-primary">Pre-empt signal cycle</span> at Hebbal
+            Junction and divert northbound freight via{" "}
+            <span className="font-mono text-xs">ORR-N → NH-44</span>. Expected congestion drop
             <span className="font-semibold text-foreground"> 34%</span> within 25 min.
           </p>
           <div className="mt-3 flex gap-2">
@@ -278,7 +303,9 @@ export function CommandCenter() {
             <div className="col-span-full grid place-items-center p-4 text-center text-sm text-muted-foreground">
               <div>
                 <AlertTriangle className="mx-auto h-6 w-6 text-destructive" />
-                <p className="mt-2 text-xs font-semibold text-foreground">Failed to load hotspots</p>
+                <p className="mt-2 text-xs font-semibold text-foreground">
+                  Failed to load hotspots
+                </p>
                 <button
                   onClick={() => hotspotsRefetch()}
                   aria-label="Retry loading hotspots"
@@ -289,22 +316,37 @@ export function CommandCenter() {
               </div>
             </div>
           ) : hotspotRows.length === 0 && !hotspotsLoading ? (
-            <div className="col-span-full p-4 text-center text-xs text-muted-foreground">No hotspot data available</div>
+            <div className="col-span-full p-4 text-center text-xs text-muted-foreground">
+              No hotspot data available
+            </div>
           ) : (
             hotspotRows.map((h) => (
-              <div key={h.id} className="group relative bg-surface/40 px-3.5 py-3 transition-colors hover:bg-surface-elevated">
+              <div
+                key={h.id}
+                className="group relative bg-surface/40 px-3.5 py-3 transition-colors hover:bg-surface-elevated"
+              >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">#{h.rank}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    #{h.rank}
+                  </span>
                   <span
                     className={`flex items-center gap-0.5 text-[10px] font-semibold ${
-                      h.trend === "up" ? "text-[var(--color-neon-orange)]" : "text-[var(--color-neon-lime)]"
+                      h.trend === "up"
+                        ? "text-[var(--color-neon-orange)]"
+                        : "text-[var(--color-neon-lime)]"
                     }`}
                   >
-                    {h.trend === "up" ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                    {h.trend === "up" ? (
+                      <TrendingUp className="h-3 w-3" />
+                    ) : (
+                      <TrendingDown className="h-3 w-3" />
+                    )}
                     {Math.abs(h.change)}%
                   </span>
                 </div>
-                <div className="mt-1.5 truncate text-sm font-semibold text-foreground">{h.zone}</div>
+                <div className="mt-1.5 truncate text-sm font-semibold text-foreground">
+                  {h.zone}
+                </div>
                 <div className="mt-2 flex items-center gap-2">
                   <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
                     <div
@@ -320,9 +362,13 @@ export function CommandCenter() {
                       }}
                     />
                   </div>
-                  <span className="font-mono text-[10px] font-semibold text-foreground">{h.risk}</span>
+                  <span className="font-mono text-[10px] font-semibold text-foreground">
+                    {h.risk}
+                  </span>
                 </div>
-                <div className="mt-1 text-[10px] text-muted-foreground">{h.cluster} events · cluster</div>
+                <div className="mt-1 text-[10px] text-muted-foreground">
+                  {h.cluster} events · cluster
+                </div>
               </div>
             ))
           )}
@@ -359,12 +405,20 @@ function KpiPill({
     <div className="flex shrink-0 items-center gap-2 rounded-full glass-pill px-4 py-2 text-[11px]">
       {dot && (
         <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full" style={{ background: color, opacity: 0.6 }} />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+          <span
+            className="absolute inline-flex h-full w-full animate-ping rounded-full"
+            style={{ background: color, opacity: 0.6 }}
+          />
+          <span
+            className="relative inline-flex h-1.5 w-1.5 rounded-full"
+            style={{ background: color }}
+          />
         </span>
       )}
       <span className="uppercase tracking-[0.14em] text-[10px] text-muted-foreground">{label}</span>
-      <span className="font-mono text-base font-semibold" style={{ color }}>{value}</span>
+      <span className="font-mono text-base font-semibold" style={{ color }}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -378,8 +432,13 @@ function ToggleSwitch({ label, on, onClick }: { label: string; on: boolean; onCl
       aria-label={`Toggle ${label}`}
       className="flex items-center gap-2 rounded-full glass-pill px-3 py-1.5 text-xs"
     >
-      <span className="uppercase tracking-[0.14em] text-muted-foreground" aria-hidden="true">{label}</span>
-      <span className={`relative h-4 w-7 rounded-full transition-colors ${on ? "bg-primary" : "bg-muted"}`} aria-hidden="true">
+      <span className="uppercase tracking-[0.14em] text-muted-foreground" aria-hidden="true">
+        {label}
+      </span>
+      <span
+        className={`relative h-4 w-7 rounded-full transition-colors ${on ? "bg-primary" : "bg-muted"}`}
+        aria-hidden="true"
+      >
         <span
           className="absolute top-0.5 h-3 w-3 rounded-full bg-background transition-all"
           style={{ left: on ? "14px" : "2px" }}
@@ -389,12 +448,24 @@ function ToggleSwitch({ label, on, onClick }: { label: string; on: boolean; onCl
   );
 }
 
-function PanelHeader({ icon: Icon, title, sub, pulse }: { icon: LucideIcon; title: string; sub: string; pulse?: boolean }) {
+function PanelHeader({
+  icon: Icon,
+  title,
+  sub,
+  pulse,
+}: {
+  icon: LucideIcon;
+  title: string;
+  sub: string;
+  pulse?: boolean;
+}) {
   return (
     <div className="flex items-center justify-between border-b border-border px-4 py-3">
       <div className="flex items-center gap-2">
         <Icon className="h-3.5 w-3.5 text-primary" />
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">{title}</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+          {title}
+        </span>
       </div>
       <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {pulse && (
@@ -436,7 +507,11 @@ function AIMetric({
   confidence: number;
 }) {
   const color =
-    tone === "orange" ? "var(--color-neon-orange)" : tone === "red" ? "var(--color-neon-red)" : "var(--color-neon-cyan)";
+    tone === "orange"
+      ? "var(--color-neon-orange)"
+      : tone === "red"
+        ? "var(--color-neon-red)"
+        : "var(--color-neon-cyan)";
   return (
     <div className="rounded-xl border border-border bg-surface-elevated/50 p-4">
       <div className="flex items-center justify-between">
@@ -449,11 +524,16 @@ function AIMetric({
         </span>
       </div>
       <div className="mt-1.5 flex items-baseline justify-between">
-        <span className="font-mono text-xl font-semibold" style={{ color }}>{value}</span>
+        <span className="font-mono text-xl font-semibold" style={{ color }}>
+          {value}
+        </span>
       </div>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{detail}</p>
       <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-muted">
-        <div className="h-full rounded-full" style={{ width: `${confidence * 100}%`, background: color }} />
+        <div
+          className="h-full rounded-full"
+          style={{ width: `${confidence * 100}%`, background: color }}
+        />
       </div>
     </div>
   );
@@ -525,12 +605,20 @@ function EventDrawer() {
             </div>
             <div className="space-y-3 p-5">
               <div className="rounded-xl border border-border bg-surface-elevated/40 p-3">
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Description</div>
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Description
+                </div>
                 <p className="mt-1 text-sm text-foreground">{drawerEvent.description}</p>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <StatBox label="Closure risk" value={`${Math.round(drawerEvent.closureRisk * 100)}%`} />
-                <StatBox label="Hotspot risk" value={`${Math.round(drawerEvent.hotspotRisk * 100)}%`} />
+                <StatBox
+                  label="Closure risk"
+                  value={`${Math.round(drawerEvent.closureRisk * 100)}%`}
+                />
+                <StatBox
+                  label="Hotspot risk"
+                  value={`${Math.round(drawerEvent.hotspotRisk * 100)}%`}
+                />
                 <StatBox label="Affected radius" value={`${drawerEvent.affectedRadius}m`} />
                 <StatBox label="ETA" value={drawerEvent.eta} />
               </div>

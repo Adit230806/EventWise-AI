@@ -5,7 +5,10 @@ export const Route = createFileRoute("/_app/triage")({
   head: () => ({
     meta: [
       { title: "AI Triage — EventWise AI" },
-      { name: "description", content: "AI copilot that scores priority, closure probability and recommended response." },
+      {
+        name: "description",
+        content: "AI copilot that scores priority, closure probability and recommended response.",
+      },
     ],
   }),
   component: AITriage,

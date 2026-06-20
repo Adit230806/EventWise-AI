@@ -5,7 +5,10 @@ export const Route = createFileRoute("/_app/analytics")({
   head: () => ({
     meta: [
       { title: "Analytics Center — EventWise AI" },
-      { name: "description", content: "Cause, zone, priority, hourly and weekly intelligence for traffic operations." },
+      {
+        name: "description",
+        content: "Cause, zone, priority, hourly and weekly intelligence for traffic operations.",
+      },
     ],
   }),
   component: AnalyticsCenter,

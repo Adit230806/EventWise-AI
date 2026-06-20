@@ -7,7 +7,12 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 export function HotspotIntelligence() {
-  const { data: hotspotsData, isLoading: hotspotsLoading, error: hotspotsError, refetch: hotspotsRefetch } = useHotspots();
+  const {
+    data: hotspotsData,
+    isLoading: hotspotsLoading,
+    error: hotspotsError,
+    refetch: hotspotsRefetch,
+  } = useHotspots();
   const { data: eventsData } = useMapEvents();
   const hotspotRows = Array.isArray(hotspotsData) ? hotspotsData : [];
   const mapEventRows = Array.isArray(eventsData) ? eventsData : [];
@@ -53,24 +58,45 @@ export function HotspotIntelligence() {
                   onClick={() => hotspotsRefetch()}
                   aria-label="Retry loading hotspot data"
                   className="mt-2 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
-                >Retry</button>
+                >
+                  Retry
+                </button>
               </div>
             ) : hotspotRows.length === 0 && !hotspotsLoading ? (
-              <div className="p-4 text-center text-xs text-muted-foreground">No hotspot data available</div>
+              <div className="p-4 text-center text-xs text-muted-foreground">
+                No hotspot data available
+              </div>
             ) : (
               hotspotRows.map((h) => (
                 <div key={h.id} className="rounded-xl border border-border bg-surface/60 p-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">#{h.rank}</span>
-                    <span className="font-mono text-xs font-semibold" style={{ color: h.risk > 80 ? "#ff4d4d" : h.risk > 60 ? "#ff9533" : "#22d3ee" }}>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      #{h.rank}
+                    </span>
+                    <span
+                      className="font-mono text-xs font-semibold"
+                      style={{
+                        color: h.risk > 80 ? "#ff4d4d" : h.risk > 60 ? "#ff9533" : "#22d3ee",
+                      }}
+                    >
                       {h.risk}
                     </span>
                   </div>
-                  <div className="mt-1 truncate text-sm font-semibold text-foreground">{h.zone}</div>
-                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-muted">
-                    <div className="h-full rounded-full" style={{ width: `${h.risk}%`, background: h.risk > 80 ? "#ff4d4d" : h.risk > 60 ? "#ff9533" : "#22d3ee" }} />
+                  <div className="mt-1 truncate text-sm font-semibold text-foreground">
+                    {h.zone}
                   </div>
-                  <div className="mt-1.5 text-[10px] text-muted-foreground">{h.cluster} active events in cluster</div>
+                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${h.risk}%`,
+                        background: h.risk > 80 ? "#ff4d4d" : h.risk > 60 ? "#ff9533" : "#22d3ee",
+                      }}
+                    />
+                  </div>
+                  <div className="mt-1.5 text-[10px] text-muted-foreground">
+                    {h.cluster} active events in cluster
+                  </div>
                 </div>
               ))
             )}
@@ -100,7 +126,12 @@ export function HotspotIntelligence() {
   );
 }
 
-function Section({ icon: Icon, title, sub, children }: {
+function Section({
+  icon: Icon,
+  title,
+  sub,
+  children,
+}: {
   icon: LucideIcon;
   title: string;
   sub: string;
@@ -110,8 +141,12 @@ function Section({ icon: Icon, title, sub, children }: {
     <div className="mb-6">
       <div className="mb-2 flex items-center gap-2">
         <Icon className="h-3.5 w-3.5 text-primary" />
-        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">{title}</span>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{sub}</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+          {title}
+        </span>
+        <span className="ml-auto font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          {sub}
+        </span>
       </div>
       {children}
     </div>
@@ -124,7 +159,9 @@ function Corridor({ name, risk, dist }: { name: string; risk: number; dist: stri
     <div className="rounded-xl border border-border bg-surface/60 p-3">
       <div className="flex items-center justify-between">
         <div className="text-sm font-semibold text-foreground">{name}</div>
-        <span className="font-mono text-xs font-semibold" style={{ color }}>{risk}</span>
+        <span className="font-mono text-xs font-semibold" style={{ color }}>
+          {risk}
+        </span>
       </div>
       <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
         <span>{dist}</span>·<span>5 incidents</span>
@@ -141,7 +178,13 @@ function Junction({ name, load }: { name: string; load: number }) {
         <span className="font-mono text-xs text-muted-foreground">{load}%</span>
       </div>
       <div className="mt-2 h-1 overflow-hidden rounded-full bg-muted">
-        <div className="h-full rounded-full" style={{ width: `${load}%`, background: load > 85 ? "#ff4d4d" : load > 70 ? "#ff9533" : "#bef264" }} />
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${load}%`,
+            background: load > 85 ? "#ff4d4d" : load > 70 ? "#ff9533" : "#bef264",
+          }}
+        />
       </div>
     </div>
   );
@@ -150,7 +193,10 @@ function Junction({ name, load }: { name: string; load: number }) {
 function Legend({ color, label }: { color: string; label: string }) {
   return (
     <div className="pointer-events-auto flex items-center gap-2 rounded-full glass-pill px-3 py-1.5 text-[11px]">
-      <span className="h-2 w-2 rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
+      <span
+        className="h-2 w-2 rounded-full"
+        style={{ background: color, boxShadow: `0 0 8px ${color}` }}
+      />
       <span className="text-muted-foreground">{label}</span>
     </div>
   );

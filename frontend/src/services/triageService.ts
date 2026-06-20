@@ -49,7 +49,12 @@ export function mapTriageFormToApiRequest(form: TriageFormData): TriageApiReques
 
 function mapPriorityLabel(label: string): TriageResponse["priorityLabel"] {
   const normalized = label.toUpperCase();
-  if (normalized === "CRITICAL" || normalized === "HIGH" || normalized === "MEDIUM" || normalized === "LOW") {
+  if (
+    normalized === "CRITICAL" ||
+    normalized === "HIGH" ||
+    normalized === "MEDIUM" ||
+    normalized === "LOW"
+  ) {
     return normalized;
   }
   return "LOW";
