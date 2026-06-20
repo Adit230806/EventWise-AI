@@ -63,15 +63,15 @@ export function CommandCenter() {
       </div>
 
       {/* TOP KPI BAR */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[400] flex flex-col gap-3 p-4">
-        <div className="pointer-events-auto flex flex-wrap items-center gap-2">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[400] flex flex-col gap-3 p-2 sm:p-4">
+        <div className="pointer-events-auto flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {statsLoading ? (
             <>
-              <Skeleton className="h-8 w-24 rounded-full" />
-              <Skeleton className="h-8 w-24 rounded-full" />
-              <Skeleton className="h-8 w-24 rounded-full" />
-              <Skeleton className="h-8 w-24 rounded-full" />
-              <Skeleton className="h-8 w-24 rounded-full" />
+              <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
+              <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
+              <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
+              <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
+              <Skeleton className="h-8 w-24 shrink-0 rounded-full" />
             </>
           ) : statsError ? (
             <div className="flex items-center gap-2 rounded-full glass-pill px-3.5 py-1.5 text-xs text-destructive">
@@ -94,10 +94,12 @@ export function CommandCenter() {
               <KpiPill label="Hotspots" value={stats?.hotspotAlerts ?? 0} tone="cyan" />
             </>
           )}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             <ToggleSwitch label="Routes" on={showRoutes} onClick={toggleRoutes} />
-            <ToggleSwitch label="Alerts" on={showAlerts} onClick={toggleAlerts} />
-            <ToggleSwitch label="Hotspots" on={showHotspots} onClick={toggleHotspots} />
+            <span className="hidden sm:contents">
+              <ToggleSwitch label="Alerts" on={showAlerts} onClick={toggleAlerts} />
+              <ToggleSwitch label="Hotspots" on={showHotspots} onClick={toggleHotspots} />
+            </span>
           </div>
         </div>
       </div>
@@ -107,7 +109,7 @@ export function CommandCenter() {
         initial={{ x: -40, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="pointer-events-auto absolute left-4 top-20 z-[400] flex w-[340px] max-w-[90vw] flex-col overflow-hidden rounded-2xl glass-panel"
+        className="pointer-events-auto absolute left-2 sm:left-4 top-16 sm:top-20 z-[400] hidden md:flex w-[340px] max-w-[90vw] flex-col overflow-hidden rounded-2xl glass-panel"
         style={{ maxHeight: "calc(100% - 280px)" }}
       >
         <PanelHeader
@@ -189,7 +191,7 @@ export function CommandCenter() {
         initial={{ x: 40, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="pointer-events-auto absolute right-4 top-20 z-[400] flex w-[320px] max-w-[90vw] flex-col gap-3"
+        className="pointer-events-auto absolute right-2 sm:right-4 top-16 sm:top-20 z-[400] hidden lg:flex w-[320px] max-w-[90vw] flex-col gap-3"
       >
         <div className="rounded-2xl glass-panel">
           <PanelHeader icon={Brain} title="AI Intelligence" sub="EventWise v2.4 · 12ms" />
@@ -246,7 +248,7 @@ export function CommandCenter() {
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-        className="pointer-events-auto absolute inset-x-4 bottom-4 z-[400] rounded-2xl glass-panel md:left-[372px] md:right-[352px]"
+        className="pointer-events-auto absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-[400] hidden sm:block rounded-2xl glass-panel md:left-[372px] lg:right-[352px]"
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
           <div className="flex items-center gap-2">
@@ -354,7 +356,7 @@ function KpiPill({
             ? "var(--color-neon-cyan)"
             : "var(--color-muted-foreground)";
   return (
-    <div className="flex items-center gap-2 rounded-full glass-pill px-3.5 py-1.5 text-xs">
+    <div className="flex shrink-0 items-center gap-2 rounded-full glass-pill px-3.5 py-1.5 text-xs">
       {dot && (
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full" style={{ background: color, opacity: 0.6 }} />

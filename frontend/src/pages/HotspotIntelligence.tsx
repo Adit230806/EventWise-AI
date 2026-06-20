@@ -13,8 +13,8 @@ export function HotspotIntelligence() {
   const mapEventRows = Array.isArray(eventsData) ? eventsData : [];
 
   return (
-    <div className="grid h-full grid-cols-1 overflow-hidden lg:grid-cols-[1fr_360px]">
-      <div className="relative">
+    <div className="flex h-full flex-col overflow-hidden lg:flex-row">
+      <div className="relative min-h-[40vh] flex-1 lg:min-h-0">
         <TrafficMap events={mapEventRows} showHotspots showRoutes={false} />
         <div className="pointer-events-none absolute left-4 top-4 z-[400]">
           <motion.div
@@ -35,7 +35,7 @@ export function HotspotIntelligence() {
         </div>
       </div>
 
-      <div className="overflow-y-auto border-l border-border bg-surface/40 p-5 backdrop-blur-xl">
+      <div className="overflow-y-auto border-t lg:border-t-0 lg:border-l border-border bg-surface/40 p-4 sm:p-5 backdrop-blur-xl lg:w-[360px] lg:shrink-0">
         <Section icon={Flame} title="Top Risk Zones" sub="ranked by composite score">
           <div className="space-y-2">
             {hotspotsLoading ? (
