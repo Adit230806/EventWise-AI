@@ -4,7 +4,7 @@ import type { TrafficEvent } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { priorityHex } from "@/lib/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, MapPin, Clock, ChevronDown, Sparkles, Download, X, AlertTriangle } from "lucide-react";
+import { Search, Filter, MapPin, Clock, ChevronDown, Sparkles, Download, X, AlertTriangle, CarFront, Wrench, Cone, Waves, TreePine, Zap, AlertCircle } from "lucide-react";
 
 const priorities = ["critical", "high", "medium", "low"];
 
@@ -205,6 +205,32 @@ function CauseDropdown({ active, onChange }: { active: string | null; onChange: 
   );
 }
 
+function getIncidentIcon(cause: string) {
+  const c = cause.toLowerCase();
+  if (c.includes("accident")) return CarFront;
+  if (c.includes("breakdown")) return Wrench;
+  if (c.includes("construction")) return Cone;
+  if (c.includes("water")) return Waves;
+  if (c.includes("tree")) return TreePine;
+  if (c.includes("signal")) return Zap;
+  if (c.includes("congestion")) return CarFront;
+  if (c.includes("hole")) return AlertCircle;
+  return AlertTriangle;
+}
+
+function IncidentThumbnail({ cause, priority }: { cause: string; priority: string }) {
+  const Icon = getIncidentIcon(cause);
+  const color = priorityHex(priority);
+  return (
+    <div 
+      className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-border"
+      style={{ background: color + "15", color: color }}
+    >
+      <Icon className="h-6 w-6 opacity-80" />
+    </div>
+  );
+}
+
 function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boolean; onToggle: () => void }) {
   return (
     <motion.button
@@ -212,17 +238,22 @@ function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boole
       onClick={onToggle}
       className="group flex flex-col rounded-xl border border-border bg-surface/60 p-4 text-left backdrop-blur-xl transition-colors hover:border-primary/30 hover:bg-surface-elevated/80"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{e.code}</div>
-          <div className="mt-0.5 text-base font-semibold text-foreground">{e.cause}</div>
+      <div className="flex items-start gap-3">
+        <IncidentThumbnail cause={e.cause} priority={e.priority} />
+        <div className="flex-1">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{e.code}</div>
+              <div className="mt-0.5 text-base font-semibold text-foreground">{e.cause}</div>
+            </div>
+            <span
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+              style={{ background: priorityHex(e.priority) + "22", color: priorityHex(e.priority) }}
+            >
+              {e.priority}
+            </span>
+          </div>
         </div>
-        <span
-          className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-          style={{ background: priorityHex(e.priority) + "22", color: priorityHex(e.priority) }}
-        >
-          {e.priority}
-        </span>
       </div>
       <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
         <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {e.zone}</span>
