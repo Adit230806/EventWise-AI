@@ -35,7 +35,7 @@ export function HotspotIntelligence() {
         </div>
       </div>
 
-      <div className="overflow-y-auto border-t lg:border-t-0 lg:border-l border-border bg-surface/40 p-4 sm:p-5 backdrop-blur-xl lg:w-[360px] lg:shrink-0">
+      <div className="overflow-y-auto border-t lg:border-t-0 lg:border-l border-border bg-surface/40 p-4 sm:p-5 backdrop-blur-xl lg:w-[320px] lg:shrink-0">
         <Section icon={Flame} title="Top Risk Zones" sub="ranked by composite score">
           <div className="space-y-2">
             {hotspotsLoading ? (

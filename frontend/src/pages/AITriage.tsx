@@ -56,7 +56,7 @@ export function AITriage() {
   return (
     <div className="grid h-full grid-cols-1 overflow-hidden lg:grid-cols-2">
       {/* LEFT - form */}
-      <div className="flex flex-col overflow-y-auto border-r border-border bg-surface/30 p-6 backdrop-blur-xl">
+      <div className="flex flex-col overflow-y-auto border-b lg:border-b-0 lg:border-r border-border bg-surface/30 p-4 sm:p-6 backdrop-blur-xl">
         <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           /triage · ai copilot
         </div>
@@ -88,7 +88,7 @@ export function AITriage() {
       </div>
 
       {/* RIGHT - results */}
-      <div className="overflow-y-auto p-6">
+      <div className="overflow-y-auto p-4 sm:p-6">
         <AnimatePresence mode="wait">
           {triage.error && !triage.isPending && (
             <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -163,7 +163,7 @@ export function AITriage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <Metric icon={AlertTriangle} label="Closure prob." value={`${result.closure}%`} color="#ff9533" />
                 <Metric icon={Flame} label="Hotspot risk" value={`${result.hotspot}%`} color="#22d3ee" />
                 <Metric icon={Target} label="Est. clear" value={result.eta} color="#bef264" />
@@ -243,9 +243,9 @@ function Metric({ icon: Icon, label, value, color }: { icon: React.ElementType; 
     <div className="rounded-xl border border-border bg-surface/60 p-3.5">
       <div className="flex items-center gap-2">
         <Icon className="h-3.5 w-3.5" style={{ color }} />
-        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+        <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">{label}</span>
       </div>
-      <div className="mt-2 font-mono text-xl font-semibold" style={{ color }}>{value}</div>
+      <div className="mt-2 font-mono text-2xl font-semibold" style={{ color }}>{value}</div>
     </div>
   );
 }

@@ -19,8 +19,8 @@ const makeIcon = (color: string, pulse: boolean) =>
     iconSize: [28, 28],
     iconAnchor: [14, 14],
     html: `<div style="position:relative;width:28px;height:28px;">
-      ${pulse ? `<span style="position:absolute;inset:0;border-radius:9999px;background:${color};opacity:0.28;animation:ping-ring 1.8s cubic-bezier(0,0,0.2,1) infinite;"></span>` : ""}
-      <span style="position:absolute;inset:6px;border-radius:9999px;background:${color};box-shadow:0 0 14px ${color};border:2px solid rgba(0,0,0,0.6);"></span>
+      ${pulse ? `<span style="position:absolute;inset:0;border-radius:9999px;background:${color};opacity:0.15;animation:ping-ring 1.8s cubic-bezier(0,0,0.2,1) infinite;"></span>` : ""}
+      <span style="position:absolute;inset:6px;border-radius:9999px;background:${color};box-shadow:0 0 8px ${color};border:2px solid rgba(0,0,0,0.6);"></span>
       <span style="position:absolute;inset:11px;border-radius:9999px;background:rgba(0,0,0,0.85);"></span>
     </div>`,
   });

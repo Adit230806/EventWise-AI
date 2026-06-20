@@ -109,7 +109,7 @@ export function CommandCenter() {
         initial={{ x: -40, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="pointer-events-auto absolute left-2 sm:left-4 top-16 sm:top-20 z-[400] hidden md:flex w-[340px] max-w-[90vw] flex-col overflow-hidden rounded-2xl glass-panel"
+        className="pointer-events-auto absolute left-2 sm:left-4 top-16 sm:top-20 z-[400] hidden md:flex w-[290px] max-w-[90vw] flex-col overflow-hidden rounded-2xl glass-panel"
         style={{ maxHeight: "calc(100% - 280px)" }}
       >
         <PanelHeader
@@ -191,7 +191,7 @@ export function CommandCenter() {
         initial={{ x: 40, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="pointer-events-auto absolute right-2 sm:right-4 top-16 sm:top-20 z-[400] hidden lg:flex w-[320px] max-w-[90vw] flex-col gap-3"
+        className="pointer-events-auto absolute right-2 sm:right-4 top-16 sm:top-20 z-[400] hidden lg:flex w-[280px] max-w-[90vw] flex-col gap-3"
       >
         <div className="rounded-2xl glass-panel">
           <PanelHeader icon={Brain} title="AI Intelligence" sub="EventWise v2.4 · 12ms" />
@@ -248,7 +248,7 @@ export function CommandCenter() {
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-        className="pointer-events-auto absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-[400] hidden sm:block rounded-2xl glass-panel md:left-[372px] lg:right-[352px]"
+        className="pointer-events-auto absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-[400] hidden sm:block rounded-2xl glass-panel md:left-[324px] lg:right-[304px]"
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
           <div className="flex items-center gap-2">
@@ -292,7 +292,7 @@ export function CommandCenter() {
             <div className="col-span-full p-4 text-center text-xs text-muted-foreground">No hotspot data available</div>
           ) : (
             hotspotRows.map((h) => (
-              <div key={h.id} className="group relative bg-surface/80 px-3.5 py-3 transition-colors hover:bg-surface-elevated">
+              <div key={h.id} className="group relative bg-surface/40 px-3.5 py-3 transition-colors hover:bg-surface-elevated">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">#{h.rank}</span>
                   <span
@@ -356,15 +356,15 @@ function KpiPill({
             ? "var(--color-neon-cyan)"
             : "var(--color-muted-foreground)";
   return (
-    <div className="flex shrink-0 items-center gap-2 rounded-full glass-pill px-3.5 py-1.5 text-xs">
+    <div className="flex shrink-0 items-center gap-2 rounded-full glass-pill px-4 py-2 text-[11px]">
       {dot && (
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full" style={{ background: color, opacity: 0.6 }} />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: color }} />
         </span>
       )}
-      <span className="uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
-      <span className="font-mono text-sm font-semibold" style={{ color }}>{value}</span>
+      <span className="uppercase tracking-[0.14em] text-[10px] text-muted-foreground">{label}</span>
+      <span className="font-mono text-base font-semibold" style={{ color }}>{value}</span>
     </div>
   );
 }
@@ -438,7 +438,7 @@ function AIMetric({
   const color =
     tone === "orange" ? "var(--color-neon-orange)" : tone === "red" ? "var(--color-neon-red)" : "var(--color-neon-cyan)";
   return (
-    <div className="rounded-xl border border-border bg-surface-elevated/50 p-3">
+    <div className="rounded-xl border border-border bg-surface-elevated/50 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Icon className="h-3.5 w-3.5" style={{ color }} />

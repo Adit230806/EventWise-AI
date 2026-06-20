@@ -33,8 +33,8 @@ export function EventExplorer() {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Header */}
-      <div className="border-b border-border bg-surface/40 px-6 py-5 backdrop-blur-xl">
-        <div className="flex items-end justify-between">
+      <div className="border-b border-border bg-surface/40 px-4 sm:px-6 py-4 sm:py-5 backdrop-blur-xl">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
               /explorer · {filtered.length} of {allEvents.length} events
@@ -48,8 +48,8 @@ export function EventExplorer() {
             <Download className="h-3.5 w-3.5" /> Export CSV
           </button>
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <div className="flex h-10 w-full max-w-md items-center gap-2 rounded-lg border border-border bg-input/40 px-3 text-sm">
+        <div className="mt-3 sm:mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="flex h-10 w-full items-center gap-2 rounded-lg border border-border bg-input/40 px-3 text-sm sm:max-w-md">
             <Search className="h-4 w-4 text-muted-foreground" />
           <input
               value={q}
@@ -68,7 +68,7 @@ export function EventExplorer() {
               </button>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             <Filter className="h-3.5 w-3.5 text-muted-foreground" />
             {priorities.map((p) => (
               <button
@@ -92,7 +92,7 @@ export function EventExplorer() {
       </div>
 
       {/* Cards list */}
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">
         {isLoading ? (
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (

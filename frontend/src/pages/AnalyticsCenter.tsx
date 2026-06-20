@@ -47,14 +47,14 @@ export function AnalyticsCenter() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="border-b border-border bg-surface/40 px-6 py-5 backdrop-blur-xl">
+      <div className="border-b border-border bg-surface/40 px-4 sm:px-6 py-4 sm:py-5 backdrop-blur-xl">
         <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           /analytics · last 7 days
         </div>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">Analytics Center</h1>
       </div>
 
-      <div className="grid grid-cols-12 gap-4 p-6">
+      <div className="grid grid-cols-12 gap-3 sm:gap-4 p-4 sm:p-6">
         {/* Insight cards row */}
         <Insight tone="lime" label="Avg resolution" value="38 min" change="-12%" icon={Activity} />
         <Insight tone="cyan" label="AI accuracy" value="94.2%" change="+1.8%" icon={Sparkles} />
@@ -165,7 +165,7 @@ export function AnalyticsCenter() {
           ) : !data ? (
             <div className="grid h-[260px] place-items-center text-xs text-muted-foreground">Waiting for analytics data</div>
           ) : (
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
               {zoneIntelligence.map((z) => (
                 <div key={z.zone} className="rounded-xl border border-border bg-surface-elevated/40 p-3">
                   <div className="truncate text-sm font-semibold text-foreground">{z.zone}</div>
@@ -203,12 +203,12 @@ function Insight({ tone, label, value, change, icon: Icon }: {
       className="col-span-12 sm:col-span-6 lg:col-span-3 rounded-2xl border border-border bg-surface/60 p-5 backdrop-blur-xl"
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+        <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">{label}</span>
         <div className="grid h-8 w-8 place-items-center rounded-lg" style={{ background: color + "1a", color }}>
           <Icon className="h-4 w-4" />
         </div>
       </div>
-      <div className="mt-3 font-mono text-3xl font-semibold tracking-tight text-foreground">{value}</div>
+      <div className="mt-3 font-mono text-4xl font-semibold tracking-tight text-foreground">{value}</div>
       <div className="mt-1 text-xs" style={{ color }}>{change}</div>
     </motion.div>
   );
