@@ -110,7 +110,7 @@ export function EventExplorer() {
       </div>
 
       {/* Cards list */}
-      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5" aria-live="polite" aria-busy={isLoading}>
         {isLoading ? (
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -125,6 +125,7 @@ export function EventExplorer() {
               <p className="mt-1 text-xs">API unavailable</p>
               <button
                 onClick={() => refetch()}
+                aria-label="Retry loading events"
                 className="mt-4 rounded-lg border border-border px-4 py-2 text-xs hover:bg-surface-elevated"
               >
                 Retry

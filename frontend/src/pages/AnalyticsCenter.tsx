@@ -242,12 +242,16 @@ export function AnalyticsCenter() {
               {/* Analytics Insight Strip */}
               {zoneIntelligence.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
-                  {causeBreakdown.length > 0 && (
-                    <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-elevated/60 px-2 py-1 font-mono text-[10px] text-muted-foreground">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#22d3ee]" />
-                      {causeBreakdown[0].cause} accounts for {Math.round((causeBreakdown[0].count / causeBreakdown.reduce((s, c) => s + c.count, 0)) * 100)}% of incidents
-                    </span>
-                  )}
+                  {causeBreakdown.length > 0 && (() => {
+                    const total = causeBreakdown.reduce((s, c) => s + c.count, 0);
+                    if (total === 0) return null;
+                    return (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-elevated/60 px-2 py-1 font-mono text-[10px] text-muted-foreground">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#22d3ee]" />
+                        {causeBreakdown[0].cause} accounts for {Math.round((causeBreakdown[0].count / total) * 100)}% of incidents
+                      </span>
+                    );
+                  })()}
                   {hourlyTrend.length > 0 && (() => {
                     const peakHour = hourlyTrend.reduce((a, b) => (b.events > a.events ? b : a), hourlyTrend[0]);
                     return (

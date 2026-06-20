@@ -7,6 +7,7 @@ import { useClientOnlyValue } from "@/hooks/useClientOnlyValue";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCommandStore, priorityHex } from "@/lib/store";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Car,
@@ -126,6 +127,23 @@ export function CommandCenter() {
         </div>
       </div>
 
+      {/* Mobile — Live feed count badge, links to explorer */}
+      {liveFeed.length > 0 && (
+        <Link
+          to="/explorer"
+          aria-label={`${liveFeed.length} active incidents — view in Event Explorer`}
+          className="pointer-events-auto absolute left-2 top-16 z-[400] flex md:hidden items-center gap-2 rounded-full glass-pill px-3 py-1.5 text-xs"
+        >
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            {liveFeed.length} active
+          </span>
+        </Link>
+      )}
+
       {/* LEFT — Live Incident Feed */}
       <motion.aside
         initial={{ x: -40, opacity: 0 }}
@@ -174,6 +192,7 @@ export function CommandCenter() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
                   onClick={() => setDrawerEvent(e)}
+                  aria-label={`View details for ${e.cause} incident in ${e.zone}`}
                   className="group mt-1.5 flex w-full items-start gap-3 rounded-xl border border-transparent bg-transparent p-2.5 text-left transition-all hover:border-border hover:bg-surface-elevated/70"
                 >
                   <div
@@ -258,10 +277,10 @@ export function CommandCenter() {
             <span className="font-semibold text-foreground"> 34%</span> within 25 min.
           </p>
           <div className="mt-3 flex gap-2">
-            <button className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+            <button aria-label="Execute recommended traffic plan" className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
               Execute Plan
             </button>
-            <button className="rounded-lg border border-border bg-transparent px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
+            <button aria-label="Open traffic simulation" className="rounded-lg border border-border bg-transparent px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
               Simulate
             </button>
           </div>
@@ -567,7 +586,11 @@ function EventDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setDrawerEvent(null)}
-            className="absolute inset-0 z-[450] bg-black/40 backdrop-blur-sm"
+            role="button"
+            tabIndex={0}
+            aria-label="Close event details"
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') setDrawerEvent(null); }}
+            className="absolute inset-0 z-[450] bg-black/40 backdrop-blur-sm cursor-default"
           />
           <motion.div
             initial={{ x: 460, opacity: 0 }}

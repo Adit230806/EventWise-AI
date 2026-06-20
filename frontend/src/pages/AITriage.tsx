@@ -136,6 +136,7 @@ export function AITriage() {
         <button
           onClick={run}
           disabled={triage.isPending}
+          aria-label={triage.isPending ? "Running AI triage analysis" : "Run AI triage analysis"}
           className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-[0_0_24px_-4px_oklch(0.88_0.22_130/0.6)] transition-all hover:bg-primary/90 disabled:opacity-60"
         >
           {triage.isPending ? (
@@ -148,7 +149,7 @@ export function AITriage() {
       </div>
 
       {/* RIGHT - results */}
-      <div className="overflow-y-auto p-4 sm:p-6">
+      <div className="overflow-y-auto p-4 sm:p-6 min-h-[40vh] lg:min-h-0">
         <AnimatePresence mode="wait">
           {triage.error && !triage.isPending && (
             <motion.div
@@ -165,6 +166,7 @@ export function AITriage() {
                 </p>
                 <button
                   onClick={() => triage.reset()}
+                  aria-label="Dismiss triage error"
                   className="mt-4 rounded-lg border border-border px-4 py-2 text-xs hover:bg-surface-elevated"
                 >
                   Dismiss
@@ -270,10 +272,16 @@ export function AITriage() {
                 </div>
                 <p className="mt-2 text-base leading-relaxed text-foreground">{result.response}</p>
                 <div className="mt-4 flex gap-2">
-                  <button className="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
+                  <button
+                    aria-label="Deploy recommended response"
+                    className="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
+                  >
                     Deploy <ArrowRight className="h-3 w-3" />
                   </button>
-                  <button className="rounded-lg border border-border bg-transparent px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  <button
+                    aria-label="Open response simulation"
+                    className="rounded-lg border border-border bg-transparent px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  >
                     Open simulation
                   </button>
                 </div>
