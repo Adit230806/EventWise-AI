@@ -8,11 +8,13 @@ import { motion } from "framer-motion";
 export function HotspotIntelligence() {
   const { data: hotspotsData, isLoading: hotspotsLoading, error: hotspotsError, refetch: hotspotsRefetch } = useHotspots();
   const { data: eventsData } = useMapEvents();
+  const hotspotRows = Array.isArray(hotspotsData) ? hotspotsData : [];
+  const mapEventRows = Array.isArray(eventsData) ? eventsData : [];
 
   return (
     <div className="grid h-full grid-cols-1 overflow-hidden lg:grid-cols-[1fr_360px]">
       <div className="relative">
-        <TrafficMap events={eventsData ?? []} showHotspots showRoutes={false} />
+        <TrafficMap events={mapEventRows} showHotspots showRoutes={false} />
         <div className="pointer-events-none absolute left-4 top-4 z-[400]">
           <motion.div
             initial={{ opacity: 0, y: -8 }}
@@ -48,10 +50,10 @@ export function HotspotIntelligence() {
                 <p className="font-semibold text-foreground">Failed to load hotspot data</p>
                 <button onClick={() => hotspotsRefetch()} className="mt-2 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated">Retry</button>
               </div>
-            ) : (hotspotsData ?? []).length === 0 && !hotspotsLoading ? (
+            ) : hotspotRows.length === 0 && !hotspotsLoading ? (
               <div className="p-4 text-center text-xs text-muted-foreground">No hotspot data available</div>
             ) : (
-              (hotspotsData ?? []).map((h) => (
+              hotspotRows.map((h) => (
                 <div key={h.id} className="rounded-xl border border-border bg-surface/60 p-3">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">#{h.rank}</span>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Sparkles, Zap, Target, AlertTriangle, Flame, ArrowRight, Loader2 } from "lucide-react";
 import { useTriage } from "@/hooks/useTriage";
@@ -18,8 +18,15 @@ export function AITriage() {
     vehicle: "Truck",
     lat: "12.9165",
     lng: "77.6224",
-    time: new Date().toISOString().slice(0, 16),
+    time: "",
   });
+
+  useEffect(() => {
+    setForm((current) => ({
+      ...current,
+      time: new Date().toISOString().slice(0, 16),
+    }));
+  }, []);
 
   const triage = useTriage();
 

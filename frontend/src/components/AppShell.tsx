@@ -1,6 +1,7 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Activity, BarChart3, Brain, Flame, Radio, Search, Settings, HelpCircle, Bell } from "lucide-react";
 import { motion } from "framer-motion";
+import { useClientOnlyValue } from "@/hooks/useClientOnlyValue";
 
 const nav = [
   { to: "/", label: "Command Center", icon: Radio },
@@ -67,6 +68,16 @@ export function AppShell() {
 }
 
 function TopBar() {
+  const clockLabel = useClientOnlyValue(() =>
+    new Date().toLocaleString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  );
+
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b border-border bg-background/70 px-5 backdrop-blur-xl">
       <div className="flex items-center gap-3">
@@ -80,7 +91,7 @@ function TopBar() {
           </span>
         </div>
         <span className="hidden text-xs text-muted-foreground md:inline">
-          {new Date().toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+          {clockLabel ?? ""}
         </span>
       </div>
       <div className="flex flex-1 items-center justify-center">

@@ -21,11 +21,11 @@ const tooltipStyle = {
 
 export function AnalyticsCenter() {
   const { data, isLoading, error, refetch } = useAnalytics();
-  const causeBreakdown = data?.causeBreakdown ?? [];
-  const priorityBreakdown = data?.priorityBreakdown ?? [];
-  const hourlyTrend = data?.hourlyTrend ?? [];
-  const weeklyTrend = data?.weeklyTrend ?? [];
-  const zoneIntelligence = data?.zoneIntelligence ?? [];
+  const causeBreakdown = Array.isArray(data?.causeBreakdown) ? data.causeBreakdown : [];
+  const priorityBreakdown = Array.isArray(data?.priorityBreakdown) ? data.priorityBreakdown : [];
+  const hourlyTrend = Array.isArray(data?.hourlyTrend) ? data.hourlyTrend : [];
+  const weeklyTrend = Array.isArray(data?.weeklyTrend) ? data.weeklyTrend : [];
+  const zoneIntelligence = Array.isArray(data?.zoneIntelligence) ? data.zoneIntelligence : [];
 
   if (error) {
     return (

@@ -3,6 +3,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { useLiveFeed } from "@/hooks/useEvents";
 import { useHotspots } from "@/hooks/useHotspots";
 import { useMapEvents } from "@/hooks/useMapEvents";
+import { useClientOnlyValue } from "@/hooks/useClientOnlyValue";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCommandStore, priorityHex } from "@/lib/store";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,12 +46,16 @@ export function CommandCenter() {
   const { data: mapEvents } = useMapEvents();
   const { data: hotspotsData, isLoading: hotspotsLoading, error: hotspotsError, refetch: hotspotsRefetch } = useHotspots();
 
+  const liveFeed = Array.isArray(liveFeedData) ? liveFeedData : [];
+  const hotspotRows = Array.isArray(hotspotsData) ? hotspotsData : [];
+  const mapEventRows = Array.isArray(mapEvents) ? mapEvents : liveFeed;
+
   return (
     <div className="relative h-full w-full overflow-hidden">
       {/* MAP */}
       <div className="absolute inset-0">
         <TrafficMap
-          events={mapEvents ?? liveFeedData ?? []}
+          events={mapEventRows}
           onSelect={setDrawerEvent}
           showHotspots={showHotspots}
           showRoutes={showRoutes}
@@ -107,7 +112,7 @@ export function CommandCenter() {
         <PanelHeader
           icon={Radio}
           title="Live Incident Feed"
-          sub={`${(liveFeedData ?? []).length} active · streaming`}
+          sub={`${liveFeed.length} active · streaming`}
           pulse
         />
         <div className="flex-1 overflow-y-auto px-2 pb-2">
@@ -131,10 +136,10 @@ export function CommandCenter() {
                 </button>
               </div>
             </div>
-          ) : (liveFeedData ?? []).length === 0 && !feedLoading ? (
+          ) : liveFeed.length === 0 && !feedLoading ? (
             <div className="p-4 text-center text-xs text-muted-foreground">No active incidents</div>
           ) : (
-            (liveFeedData ?? []).map((e, i) => {
+            liveFeed.map((e, i) => {
               const Icon = causeIcon[e.cause] ?? AlertTriangle;
               return (
                 <motion.button
@@ -163,7 +168,7 @@ export function CommandCenter() {
                     <div className="mt-0.5 truncate text-xs text-muted-foreground">{e.zone}</div>
                     <div className="mt-1.5 flex items-center justify-between">
                       <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        {timeAgo(e.createdAt)}
+                      <TimeAgo iso={e.createdAt} />
                       </span>
                       <span className="flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary opacity-0 transition-opacity group-hover:opacity-100">
                         Dispatch <ChevronRight className="h-3 w-3" />
@@ -278,10 +283,10 @@ export function CommandCenter() {
                 </button>
               </div>
             </div>
-          ) : (hotspotsData ?? []).length === 0 && !hotspotsLoading ? (
+          ) : hotspotRows.length === 0 && !hotspotsLoading ? (
             <div className="col-span-full p-4 text-center text-xs text-muted-foreground">No hotspot data available</div>
           ) : (
-            (hotspotsData ?? []).map((h) => (
+            hotspotRows.map((h) => (
               <div key={h.id} className="group relative bg-surface/80 px-3.5 py-3 transition-colors hover:bg-surface-elevated">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">#{h.rank}</span>
@@ -452,6 +457,15 @@ function timeAgo(iso: string) {
   if (mins < 60) return `${mins}m ago`;
   const hr = Math.floor(mins / 60);
   return `${hr}h ${mins % 60}m ago`;
+}
+
+function TimeAgo({ iso }: { iso: string }) {
+  const label = useClientOnlyValue(() => timeAgo(iso), [iso]);
+  return (
+    <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+      {label ?? ""}
+    </span>
+  );
 }
 
 function EventDrawer() {
