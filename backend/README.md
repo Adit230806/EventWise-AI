@@ -2,6 +2,8 @@
 
 FastAPI backend serving the Astram anonymized traffic events dataset from CSV.
 
+**Production:** https://eventwise-ai-1.onrender.com
+
 ## Setup
 
 ```bash
@@ -11,16 +13,18 @@ pip install -r requirements.txt
 
 Dataset path (auto-resolved): `../data/Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv`
 
-## Run
+## Run locally
 
 ```bash
 cd backend
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-- **Swagger UI:** http://localhost:8000/docs
-- **ReDoc:** http://localhost:8000/redoc
-- **Health:** http://localhost:8000/health
+## Production endpoints
+
+- **Swagger UI:** https://eventwise-ai-1.onrender.com/docs
+- **ReDoc:** https://eventwise-ai-1.onrender.com/redoc
+- **Health:** https://eventwise-ai-1.onrender.com/health
 
 ## Endpoints
 
@@ -32,6 +36,7 @@ python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 | GET | `/api/map-events` | Active geolocated map markers |
 | GET | `/api/hotspots` | Ranked hotspot zones |
 | GET | `/api/analytics` | Charts data (default last 7 days) |
+| POST | `/api/triage` | AI triage inference |
 
 ## Architecture
 
@@ -44,16 +49,14 @@ utils/    → CSV path config + value mappers
 
 ## Frontend integration
 
-Copy `frontend/.env.example` to `frontend/.env` for local dev:
+Production frontend: https://event-wise-ai-eight.vercel.app
+
+Set in `frontend/.env` (and Vercel environment variables at build time):
 
 ```
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=https://eventwise-ai-1.onrender.com
 ```
 
-For production, set `VITE_API_URL` in your frontend host (Lovable/Vercel) at **build time** to your Render backend URL (no trailing slash, no `/api` suffix).
+Do not include `/api` — the frontend adds route paths like `/api/stats`.
 
-On Render, set backend env `CORS_ORIGINS` to your deployed frontend URL(s), comma-separated:
-
-```
-CORS_ORIGINS=https://your-frontend.example.com
-```
+CORS allows only the production frontend origin (`https://event-wise-ai-eight.vercel.app`).

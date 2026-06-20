@@ -1,6 +1,8 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+export const API_BASE_URL = "https://eventwise-ai-1.onrender.com";
+
+const BASE_URL = import.meta.env.VITE_API_URL ?? API_BASE_URL;
 const TIMEOUT_MS = 15_000;
 
 export const api = axios.create({
@@ -41,7 +43,7 @@ api.interceptors.response.use(
       return Promise.reject(new Error(`API timeout after ${TIMEOUT_MS}ms`));
     }
     if (error.request) {
-      return Promise.reject(new Error("API unreachable — is the backend running?"));
+      return Promise.reject(new Error("API unreachable — check network or backend status."));
     }
     return Promise.reject(error);
   },
