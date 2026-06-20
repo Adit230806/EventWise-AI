@@ -21,8 +21,8 @@ import { priorityHex } from "@/lib/store";
 
 const tooltipStyle = {
   contentStyle: {
-    background: "oklch(0.11 0.006 240)",
-    border: "1px solid oklch(0.22 0.01 240 / 0.6)",
+    background: "var(--color-popover)",
+    border: "1px solid var(--color-border)",
     borderRadius: 10,
     fontSize: 12,
     fontFamily: "Space Grotesk",
@@ -157,7 +157,7 @@ export function AnalyticsCenter() {
                     tick={false}
                   />
                   <RadialBar
-                    background={{ fill: "oklch(0.18 0.01 240)" }}
+                    background={{ fill: "var(--color-muted)" }}
                     dataKey="count"
                     cornerRadius={6}
                   />

@@ -117,6 +117,111 @@
   /* Same as :root — app is dark-first */
 }
 
+/* ─── Light mode token overrides ──────────────────────────────────────────── */
+/*
+ * Applied when <html class="light"> is set by the theme toggle.
+ * Preserves the EventWise brand identity on a light background:
+ *   - Primary neon-lime accent stays vivid (darkened slightly for contrast)
+ *   - Neon accent colours shifted darker so they're readable on white/light-grey
+ *   - Backgrounds: white → light-grey surface hierarchy
+ *   - Borders and inputs: visible but subtle
+ *   - Charts use the same palette (just the page bg changes, recharts is bg-agnostic)
+ *   - Maps are intentionally excluded — Leaflet tiles stay dark via scoped overrides below
+ */
+.light {
+  --radius: 0.75rem;
+
+  /* Page / app backgrounds */
+  --background:       oklch(0.98 0.002 240);   /* near-white with a hint of cool grey */
+  --foreground:       oklch(0.12 0.01 240);    /* near-black text */
+
+  /* Surface hierarchy (cards, panels) */
+  --surface:          oklch(0.94 0.004 240);   /* light grey surface */
+  --surface-elevated: oklch(0.98 0.003 240);   /* white-ish elevated layer */
+
+  /* Card / Popover */
+  --card:             oklch(1 0 0);            /* pure white card */
+  --card-foreground:  oklch(0.12 0.01 240);
+  --popover:          oklch(1 0 0);
+  --popover-foreground: oklch(0.12 0.01 240);
+
+  /* Primary — neon lime, deepened for contrast on white (WCAG AA on white bg) */
+  --primary:          oklch(0.62 0.20 130);    /* deeper lime-green */
+  --primary-foreground: oklch(0.98 0 0);       /* white on primary bg */
+
+  /* Secondary */
+  --secondary:        oklch(0.90 0.006 240);
+  --secondary-foreground: oklch(0.12 0.01 240);
+
+  /* Muted tones */
+  --muted:            oklch(0.90 0.005 240);
+  --muted-foreground: oklch(0.45 0.012 240);
+
+  /* Accent */
+  --accent:           oklch(0.55 0.15 200);    /* darker cyan for light bg */
+  --accent-foreground: oklch(0.98 0 0);
+
+  /* Destructive */
+  --destructive:      oklch(0.55 0.25 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* Borders / inputs */
+  --border:           oklch(0.82 0.008 240 / 0.8);
+  --input:            oklch(0.93 0.004 240);
+  --ring:             oklch(0.62 0.20 130);
+
+  /* Charts — same hue family but contrast-safe on light bg */
+  --chart-1:          oklch(0.58 0.20 130);    /* deep lime */
+  --chart-2:          oklch(0.50 0.16 200);    /* deep cyan */
+  --chart-3:          oklch(0.55 0.18 50);     /* amber */
+  --chart-4:          oklch(0.50 0.22 25);     /* red */
+  --chart-5:          oklch(0.50 0.18 290);    /* purple */
+
+  /* Neon accents — darkened so they're legible on light surfaces */
+  --neon-lime:        oklch(0.55 0.20 130);
+  --neon-cyan:        oklch(0.48 0.15 200);
+  --neon-orange:      oklch(0.58 0.18 55);
+  --neon-red:         oklch(0.52 0.24 25);
+
+  /* Sidebar — slightly cooler light grey */
+  --sidebar:          oklch(0.96 0.003 240);
+  --sidebar-foreground: oklch(0.12 0.01 240);
+  --sidebar-primary:  oklch(0.62 0.20 130);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent:   oklch(0.88 0.006 240);
+  --sidebar-accent-foreground: oklch(0.12 0.01 240);
+  --sidebar-border:   oklch(0.82 0.008 240 / 0.6);
+  --sidebar-ring:     oklch(0.62 0.20 130);
+}
+
+/* ─── Light mode body background ──────────────────────────────────────────── */
+.light body {
+  background-image:
+    radial-gradient(ellipse at top left,  oklch(0.62 0.20 130 / 0.05), transparent 50%),
+    radial-gradient(ellipse at bottom right, oklch(0.48 0.15 200 / 0.04), transparent 50%);
+}
+
+/* ─── Light mode: scanline is invisible on white — disable it ─────────────── */
+.light .scanline {
+  background-image: none;
+}
+
+/* ─── Light mode glass utilities ──────────────────────────────────────────── */
+.light .glass-panel {
+  background: color-mix(in oklab, oklch(1 0 0) 85%, transparent);
+  box-shadow: 0 4px 24px -6px oklch(0 0 0 / 0.10), inset 0 1px 0 oklch(1 0 0 / 0.9);
+  border-color: oklch(0.82 0.008 240 / 0.6);
+}
+.light .glass-pill {
+  background: color-mix(in oklab, oklch(1 0 0) 90%, transparent);
+  border-color: oklch(0.82 0.008 240 / 0.7);
+}
+
+/* ─── Light mode: Leaflet map stays dark (maps unaffected) ────────────────── */
+/* The map container bg, tile filter, popups, and zoom controls are all
+   scoped to .leaflet-* selectors with !important, so they win over any
+   theme token. No changes needed here — maps look identical in both modes. */
+
 @layer base {
   * {
     border-color: var(--color-border);

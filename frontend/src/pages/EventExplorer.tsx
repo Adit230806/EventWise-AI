@@ -276,8 +276,10 @@ function EventCard({
 }) {
   return (
     <motion.button
-      layout
+      layout="position"
       onClick={onToggle}
+      aria-expanded={expanded}
+      aria-label={`${expanded ? "Collapse" : "Expand"} event: ${e.cause} in ${e.zone}`}
       className="group flex flex-col rounded-xl border border-border bg-surface/60 p-4 text-left backdrop-blur-xl transition-colors hover:border-primary/30 hover:bg-surface-elevated/80"
     >
       <div className="flex items-start justify-between">

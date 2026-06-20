@@ -29,11 +29,14 @@ import {
   MapPin,
   ChevronLeft,
   ChevronRight,
+  Sun,
+  Moon,
   type LucideIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLiveClock } from "@/hooks/useLiveClock";
-import { useEvents } from "@/hooks/useEvents";
+import { useEvents, useLiveFeed } from "@/hooks/useEvents";
+import { useHotspots } from "@/hooks/useHotspots";
 import { useCommandStore, priorityHex } from "@/lib/store";
 import {
   useState,
@@ -244,7 +247,7 @@ export function AppShell() {
           </a>
 
           <Link
-            to="/analytics"
+            to="/settings"
             aria-label="Settings"
             className="group relative flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground transition-colors"
           >
@@ -326,7 +329,7 @@ export function AppShell() {
                   Help &amp; Docs
                 </a>
                 <Link
-                  to="/analytics"
+                  to="/settings"
                   aria-label="Settings"
                   className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground transition-colors"
                 >
@@ -346,6 +349,219 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+    </div>
+  );
+}
+
+// ─── ThemeToggle ──────────────────────────────────────────────────────────────
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    try {
+      const raw = localStorage.getItem("ew_settings");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.theme === "light") return "light";
+      }
+    } catch {}
+    return "dark";
+  });
+
+  const toggle = useCallback(() => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    try {
+      const raw = localStorage.getItem("ew_settings");
+      const current = raw ? JSON.parse(raw) : {};
+      localStorage.setItem("ew_settings", JSON.stringify({ ...current, theme: next }));
+    } catch {}
+    const root = document.documentElement;
+    if (next === "dark") {
+      root.classList.add("dark");
+      root.classList.remove("light");
+    } else {
+      root.classList.add("light");
+      root.classList.remove("dark");
+    }
+  }, [theme]);
+
+  return (
+    <button
+      onClick={toggle}
+      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      className="grid h-7 w-7 place-items-center rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors border border-border"
+    >
+      {theme === "dark" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+    </button>
+  );
+}
+
+// ─── NotificationBell ─────────────────────────────────────────────────────────
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
+function NotificationBell() {
+  const [open, setOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState<number | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  const { data: liveFeed = [] } = useLiveFeed();
+  const { data: hotspots = [] } = useHotspots();
+
+  // Initialise unread count from live data
+  useEffect(() => {
+    if (unreadCount === null) {
+      setUnreadCount(Math.min(liveFeed.length + hotspots.length, 99));
+    }
+  }, [liveFeed.length, hotspots.length, unreadCount]);
+
+  const displayCount = unreadCount ?? 0;
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    function handle(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [open]);
+
+  const topFeed = liveFeed.slice(0, 3);
+  const topHotspots = hotspots.slice(0, 2);
+
+  return (
+    <div className="relative" ref={wrapRef}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-label={`Notifications — ${displayCount} unread`}
+        aria-expanded={open}
+        aria-haspopup="true"
+        className="relative grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface/60 text-muted-foreground hover:text-foreground"
+      >
+        <Bell className="h-4 w-4" />
+        {displayCount > 0 && (
+          <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
+            {displayCount > 99 ? "99+" : displayCount}
+          </span>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.14, ease: "easeOut" }}
+            className="absolute right-0 top-full mt-2 w-80 max-h-[420px] overflow-y-auto rounded-xl border border-border bg-popover shadow-2xl z-[600]"
+          >
+            {/* Panel header */}
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-foreground">Notifications</span>
+                {displayCount > 0 && (
+                  <span className="grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
+                    {displayCount}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => setUnreadCount(0)}
+                className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Mark all read
+              </button>
+            </div>
+
+            {/* Incidents */}
+            {topFeed.length > 0 && (
+              <>
+                <div className="px-4 pt-3 pb-1">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Incidents
+                  </span>
+                </div>
+                {topFeed.map((event) => (
+                  <div
+                    key={event.id}
+                    className="flex items-start gap-3 px-4 py-3 hover:bg-surface-elevated/60 transition-colors cursor-pointer border-b border-border last:border-0"
+                  >
+                    <span
+                      className="mt-0.5 shrink-0 rounded px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider"
+                      style={{
+                        background: priorityHex(event.priority) + "22",
+                        color: priorityHex(event.priority),
+                      }}
+                    >
+                      {event.priority}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {event.cause} · {event.zone}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        {timeAgo(event.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* Hotspot Alerts */}
+            {topHotspots.length > 0 && (
+              <>
+                <div className="px-4 pt-3 pb-1">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Hotspot Alerts
+                  </span>
+                </div>
+                {topHotspots.map((h) => (
+                  <div
+                    key={h.id}
+                    className="flex items-start gap-3 px-4 py-3 hover:bg-surface-elevated/60 transition-colors cursor-pointer border-b border-border last:border-0"
+                  >
+                    <span className="mt-0.5 text-base">🔥</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {h.zone} — Risk {Math.round(h.risk * 100)}%
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        Cluster of {h.cluster} events
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* AI Recommendation */}
+            <div className="px-4 pt-3 pb-1">
+              <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                AI Recommendation
+              </span>
+            </div>
+            <div className="flex items-start gap-3 px-4 py-3 hover:bg-surface-elevated/60 transition-colors cursor-pointer">
+              <span className="mt-0.5 text-base">🧠</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-foreground">Priority surge detected</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  Pre-empt Hebbal Junction signal cycle
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -383,6 +599,10 @@ function TopBar({ onMenuToggle }: { onMenuToggle: () => void }) {
         >
           {clock ?? ""}
         </span>
+        {/* Theme toggle — desktop only */}
+        <div className="hidden lg:flex">
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Centre — global search */}
@@ -392,18 +612,7 @@ function TopBar({ onMenuToggle }: { onMenuToggle: () => void }) {
 
       {/* Right — notifications + user */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <button
-          aria-label="Notifications — 9 unread"
-          className="relative grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface/60 text-muted-foreground hover:text-foreground"
-        >
-          <Bell className="h-4 w-4" />
-          <span
-            aria-hidden="true"
-            className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground"
-          >
-            9
-          </span>
-        </button>
+        <NotificationBell />
         <div className="flex items-center gap-2.5 rounded-lg border border-border bg-surface/60 px-2.5 py-1">
           <div className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 text-xs font-semibold text-primary">
             AK
