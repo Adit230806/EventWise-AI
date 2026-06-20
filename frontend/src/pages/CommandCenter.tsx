@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TrafficMap } from "@/components/TrafficMap";
 import { useDashboard } from "@/hooks/useDashboard";
 import { useLiveFeed } from "@/hooks/useEvents";
@@ -20,6 +21,7 @@ import {
   Sparkles,
   Flame,
   ChevronRight,
+  ChevronDown,
   Radio,
   Zap,
   TrendingUp,
@@ -48,6 +50,11 @@ export function CommandCenter() {
     toggleHotspots,
     setDrawerEvent,
   } = useCommandStore();
+
+  // Panel collapse state
+  const [feedCollapsed, setFeedCollapsed] = useState(false);
+  const [aiCollapsed, setAiCollapsed] = useState(false);
+  const [hotspotsCollapsed, setHotspotsCollapsed] = useState(false);
 
   const {
     data: stats,
@@ -145,254 +152,394 @@ export function CommandCenter() {
       )}
 
       {/* LEFT — Live Incident Feed */}
-      <motion.aside
-        initial={{ x: -40, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.45, ease: "easeOut" }}
-        className="pointer-events-auto absolute left-2 sm:left-4 top-16 sm:top-20 z-[400] hidden md:flex w-[290px] max-w-[90vw] flex-col overflow-hidden rounded-2xl glass-panel"
-        style={{ maxHeight: "calc(100% - 280px)" }}
-      >
-        <PanelHeader
-          icon={Radio}
-          title="Live Incident Feed"
-          sub={`${liveFeed.length} active · streaming`}
-          pulse
-        />
-        <div className="flex-1 overflow-y-auto px-2 pb-2">
-          {feedLoading ? (
-            <>
-              <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
-              <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
-              <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
-              <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
-            </>
-          ) : feedError ? (
-            <div className="grid place-items-center p-4 text-center text-sm text-muted-foreground">
-              <div>
-                <AlertTriangle className="mx-auto h-6 w-6 text-destructive" />
-                <p className="mt-2 text-xs font-semibold text-foreground">Failed to load feed</p>
+      <AnimatePresence initial={false} mode="wait">
+        {feedCollapsed ? (
+          /* Collapsed pill */
+          <motion.button
+            key="feed-pill"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            onClick={() => setFeedCollapsed(false)}
+            aria-label="Expand Live Incident Feed panel"
+            className="pointer-events-auto absolute left-2 sm:left-4 top-16 sm:top-20 z-[400] hidden md:flex flex-col items-center gap-2 rounded-2xl glass-panel px-3 py-3 cursor-pointer hover:bg-surface-elevated/80 transition-colors"
+          >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
+            <Radio className="h-4 w-4 text-primary" />
+            <span
+              className="font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground"
+              style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+            >
+              Live Feed
+            </span>
+            <span className="font-mono text-[10px] font-semibold text-foreground">
+              {liveFeed.length}
+            </span>
+            <ChevronDown className="h-3 w-3 text-muted-foreground rotate-[-90deg]" />
+          </motion.button>
+        ) : (
+          /* Expanded panel */
+          <motion.aside
+            key="feed-panel"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="pointer-events-auto absolute left-2 sm:left-4 top-16 sm:top-20 z-[400] hidden md:flex w-[290px] max-w-[90vw] flex-col overflow-hidden rounded-2xl glass-panel"
+            style={{ maxHeight: "calc(100% - 280px)" }}
+          >
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Radio className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+                  Live Incident Feed
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+                  </span>
+                  {liveFeed.length} active · streaming
+                </span>
                 <button
-                  onClick={() => feedRefetch()}
-                  aria-label="Retry loading feed"
-                  className="mt-3 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
+                  onClick={() => setFeedCollapsed(true)}
+                  aria-label="Collapse Live Incident Feed panel"
+                  className="grid h-6 w-6 place-items-center rounded-md text-muted-foreground hover:bg-surface-elevated hover:text-foreground transition-colors"
                 >
-                  Retry
+                  <ChevronDown className="h-3.5 w-3.5 rotate-90" />
                 </button>
               </div>
             </div>
-          ) : liveFeed.length === 0 && !feedLoading ? (
-            <div className="p-4 text-center text-xs text-muted-foreground">No active incidents</div>
-          ) : (
-            liveFeed.map((e, i) => {
-              const Icon = causeIcon[e.cause] ?? AlertTriangle;
-              return (
-                <motion.button
-                  key={e.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
-                  onClick={() => setDrawerEvent(e)}
-                  aria-label={`View details for ${e.cause} incident in ${e.zone}`}
-                  className="group mt-1.5 flex w-full items-start gap-3 rounded-xl border border-transparent bg-transparent p-2.5 text-left transition-all hover:border-border hover:bg-surface-elevated/70"
-                >
-                  <div
-                    className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg border"
-                    style={{
-                      borderColor: priorityHex(e.priority) + "40",
-                      background: priorityHex(e.priority) + "1a",
-                      color: priorityHex(e.priority),
-                    }}
-                  >
-                    <Icon className="h-4 w-4" />
+            <div className="flex-1 overflow-y-auto px-2 pb-2">
+              {feedLoading ? (
+                <>
+                  <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
+                  <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
+                  <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
+                  <Skeleton className="h-16 w-full rounded-xl mt-1.5" />
+                </>
+              ) : feedError ? (
+                <div className="grid place-items-center p-4 text-center text-sm text-muted-foreground">
+                  <div>
+                    <AlertTriangle className="mx-auto h-6 w-6 text-destructive" />
+                    <p className="mt-2 text-xs font-semibold text-foreground">Failed to load feed</p>
+                    <button
+                      onClick={() => feedRefetch()}
+                      aria-label="Retry loading feed"
+                      className="mt-3 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
+                    >
+                      Retry
+                    </button>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="truncate text-sm font-semibold text-foreground">
-                        {e.cause}
-                      </span>
-                      <PriorityChip p={e.priority} />
-                    </div>
-                    <div className="mt-0.5 truncate text-xs text-muted-foreground">{e.zone}</div>
-                    <div className="mt-1.5 flex items-center justify-between">
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        <TimeAgo iso={e.createdAt} />
-                      </span>
-                      <span className="flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                        Dispatch <ChevronRight className="h-3 w-3" />
-                      </span>
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })
-          )}
-        </div>
-      </motion.aside>
+                </div>
+              ) : liveFeed.length === 0 && !feedLoading ? (
+                <div className="p-4 text-center text-xs text-muted-foreground">No active incidents</div>
+              ) : (
+                liveFeed.map((e, i) => {
+                  const Icon = causeIcon[e.cause] ?? AlertTriangle;
+                  return (
+                    <motion.button
+                      key={e.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.03 }}
+                      onClick={() => setDrawerEvent(e)}
+                      aria-label={`View details for ${e.cause} incident in ${e.zone}`}
+                      className="group mt-1.5 flex w-full items-start gap-3 rounded-xl border border-transparent bg-transparent p-2.5 text-left transition-all hover:border-border hover:bg-surface-elevated/70"
+                    >
+                      <div
+                        className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg border"
+                        style={{
+                          borderColor: priorityHex(e.priority) + "40",
+                          background: priorityHex(e.priority) + "1a",
+                          color: priorityHex(e.priority),
+                        }}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="truncate text-sm font-semibold text-foreground">
+                            {e.cause}
+                          </span>
+                          <PriorityChip p={e.priority} />
+                        </div>
+                        <div className="mt-0.5 truncate text-xs text-muted-foreground">{e.zone}</div>
+                        <div className="mt-1.5 flex items-center justify-between">
+                          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                            <TimeAgo iso={e.createdAt} />
+                          </span>
+                          <span className="flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                            Dispatch <ChevronRight className="h-3 w-3" />
+                          </span>
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })
+              )}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* RIGHT — AI Intelligence */}
-      <motion.aside
-        initial={{ x: 40, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.45, ease: "easeOut" }}
-        className="pointer-events-auto absolute right-2 sm:right-4 top-16 sm:top-20 z-[400] hidden lg:flex w-[280px] max-w-[90vw] flex-col gap-3"
-      >
-        <div className="rounded-2xl glass-panel">
-          <PanelHeader icon={Brain} title="AI Intelligence" sub="EventWise v2.4 · 12ms" />
-          <div className="space-y-2 p-3">
-            <AIMetric
-              icon={Target}
-              label="Priority Prediction"
-              value="HIGH"
-              detail="Critical risk surge in next 18 min"
-              tone="orange"
-              confidence={0.87}
-            />
-            <AIMetric
-              icon={AlertTriangle}
-              label="Closure Risk"
-              value="62%"
-              detail="Silk Board corridor — preempt"
-              tone="red"
-              confidence={0.74}
-            />
-            <AIMetric
-              icon={Flame}
-              label="Hotspot Risk"
-              value="ELEVATED"
-              detail="3 clusters trending upward"
-              tone="cyan"
-              confidence={0.91}
-            />
-          </div>
-        </div>
-        <div className="rounded-2xl glass-panel p-3.5">
-          <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-            <span className="uppercase tracking-[0.18em]">Recommended Action</span>
-          </div>
-          <p className="mt-2 text-sm leading-relaxed text-foreground">
-            <span className="font-semibold text-primary">Pre-empt signal cycle</span> at Hebbal
-            Junction and divert northbound freight via{" "}
-            <span className="font-mono text-xs">ORR-N → NH-44</span>. Expected congestion drop
-            <span className="font-semibold text-foreground"> 34%</span> within 25 min.
-          </p>
-          <div className="mt-3 flex gap-2">
-            <button aria-label="Execute recommended traffic plan" className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
-              Execute Plan
-            </button>
-            <button aria-label="Open traffic simulation" className="rounded-lg border border-border bg-transparent px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
-              Simulate
-            </button>
-          </div>
-        </div>
-      </motion.aside>
-
-      {/* BOTTOM — Hotspot Panel */}
-      <motion.aside
-        initial={{ y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-        className="pointer-events-auto absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-[400] hidden sm:block rounded-2xl glass-panel md:left-[324px] lg:right-[304px]"
-      >
-        <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-          <div className="flex items-center gap-2">
-            <Flame className="h-3.5 w-3.5 text-[var(--color-neon-orange)]" />
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
-              Hotspot Intelligence
+      <AnimatePresence initial={false} mode="wait">
+        {aiCollapsed ? (
+          /* Collapsed pill */
+          <motion.button
+            key="ai-pill"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            onClick={() => setAiCollapsed(false)}
+            aria-label="Expand AI Intelligence panel"
+            className="pointer-events-auto absolute right-2 sm:right-4 top-16 sm:top-20 z-[400] hidden lg:flex flex-col items-center gap-2 rounded-2xl glass-panel px-3 py-3 cursor-pointer hover:bg-surface-elevated/80 transition-colors"
+          >
+            <Brain className="h-4 w-4 text-primary" />
+            <span
+              className="font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground"
+              style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+            >
+              AI Intelligence
             </span>
-            <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              top 6 of {stats?.hotspotAlerts ?? 0}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            <Activity className="h-3 w-3 text-primary" /> updated 12s ago
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-px overflow-hidden bg-border md:grid-cols-3 lg:grid-cols-6">
-          {hotspotsLoading ? (
-            <>
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-            </>
-          ) : hotspotsError ? (
-            <div className="col-span-full grid place-items-center p-4 text-center text-sm text-muted-foreground">
-              <div>
-                <AlertTriangle className="mx-auto h-6 w-6 text-destructive" />
-                <p className="mt-2 text-xs font-semibold text-foreground">
-                  Failed to load hotspots
-                </p>
-                <button
-                  onClick={() => hotspotsRefetch()}
-                  aria-label="Retry loading hotspots"
-                  className="mt-3 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
-                >
-                  Retry
+            <ChevronDown className="h-3 w-3 text-muted-foreground rotate-90" />
+          </motion.button>
+        ) : (
+          /* Expanded panel */
+          <motion.aside
+            key="ai-panel"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="pointer-events-auto absolute right-2 sm:right-4 top-16 sm:top-20 z-[400] hidden lg:flex w-[280px] max-w-[90vw] flex-col gap-3"
+          >
+            <div className="rounded-2xl glass-panel">
+              <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <Brain className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+                    AI Intelligence
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    EventWise v2.4 · 12ms
+                  </span>
+                  <button
+                    onClick={() => setAiCollapsed(true)}
+                    aria-label="Collapse AI Intelligence panel"
+                    className="grid h-6 w-6 place-items-center rounded-md text-muted-foreground hover:bg-surface-elevated hover:text-foreground transition-colors"
+                  >
+                    <ChevronDown className="h-3.5 w-3.5 rotate-[-90deg]" />
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-2 p-3">
+                <AIMetric
+                  icon={Target}
+                  label="Priority Prediction"
+                  value="HIGH"
+                  detail="Critical risk surge in next 18 min"
+                  tone="orange"
+                  confidence={0.87}
+                />
+                <AIMetric
+                  icon={AlertTriangle}
+                  label="Closure Risk"
+                  value="62%"
+                  detail="Silk Board corridor — preempt"
+                  tone="red"
+                  confidence={0.74}
+                />
+                <AIMetric
+                  icon={Flame}
+                  label="Hotspot Risk"
+                  value="ELEVATED"
+                  detail="3 clusters trending upward"
+                  tone="cyan"
+                  confidence={0.91}
+                />
+              </div>
+            </div>
+            <div className="rounded-2xl glass-panel p-3.5">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="uppercase tracking-[0.18em]">Recommended Action</span>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-foreground">
+                <span className="font-semibold text-primary">Pre-empt signal cycle</span> at Hebbal
+                Junction and divert northbound freight via{" "}
+                <span className="font-mono text-xs">ORR-N → NH-44</span>. Expected congestion drop
+                <span className="font-semibold text-foreground"> 34%</span> within 25 min.
+              </p>
+              <div className="mt-3 flex gap-2">
+                <button aria-label="Execute recommended traffic plan" className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+                  Execute Plan
+                </button>
+                <button aria-label="Open traffic simulation" className="rounded-lg border border-border bg-transparent px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
+                  Simulate
                 </button>
               </div>
             </div>
-          ) : hotspotRows.length === 0 && !hotspotsLoading ? (
-            <div className="col-span-full p-4 text-center text-xs text-muted-foreground">
-              No hotspot data available
-            </div>
-          ) : (
-            hotspotRows.map((h) => (
-              <div
-                key={h.id}
-                className="group relative bg-surface/40 px-3.5 py-3 transition-colors hover:bg-surface-elevated"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    #{h.rank}
-                  </span>
-                  <span
-                    className={`flex items-center gap-0.5 text-[10px] font-semibold ${
-                      h.trend === "up"
-                        ? "text-[var(--color-neon-orange)]"
-                        : "text-[var(--color-neon-lime)]"
-                    }`}
-                  >
-                    {h.trend === "up" ? (
-                      <TrendingUp className="h-3 w-3" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3" />
-                    )}
-                    {Math.abs(h.change)}%
-                  </span>
-                </div>
-                <div className="mt-1.5 truncate text-sm font-semibold text-foreground">
-                  {h.zone}
-                </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${h.risk}%`,
-                        background:
-                          h.risk > 80
-                            ? "var(--color-neon-red)"
-                            : h.risk > 60
-                              ? "var(--color-neon-orange)"
-                              : "var(--color-neon-cyan)",
-                      }}
-                    />
-                  </div>
-                  <span className="font-mono text-[10px] font-semibold text-foreground">
-                    {h.risk}
-                  </span>
-                </div>
-                <div className="mt-1 text-[10px] text-muted-foreground">
-                  {h.cluster} events · cluster
-                </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* BOTTOM — Hotspot Panel */}
+      <AnimatePresence initial={false} mode="wait">
+        {hotspotsCollapsed ? (
+          /* Collapsed pill */
+          <motion.button
+            key="hotspots-pill"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            onClick={() => setHotspotsCollapsed(false)}
+            aria-label="Expand Hotspot Intelligence panel"
+            className="pointer-events-auto absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-[400] hidden sm:flex items-center justify-center gap-2.5 rounded-2xl glass-panel px-5 py-2.5 cursor-pointer hover:bg-surface-elevated/80 transition-colors md:left-[324px] lg:right-[304px]"
+          >
+            <Flame className="h-3.5 w-3.5 text-[var(--color-neon-orange)]" />
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+              Hotspots
+            </span>
+            <span className="font-mono text-xs font-semibold text-[var(--color-neon-orange)]">
+              {hotspotRows.length}
+            </span>
+            <span className="ml-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              · top zones
+            </span>
+            <ChevronDown className="ml-auto h-3.5 w-3.5 text-muted-foreground rotate-180" />
+          </motion.button>
+        ) : (
+          /* Expanded panel */
+          <motion.aside
+            key="hotspots-panel"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="pointer-events-auto absolute inset-x-2 sm:inset-x-4 bottom-2 sm:bottom-4 z-[400] hidden sm:block rounded-2xl glass-panel md:left-[324px] lg:right-[304px]"
+          >
+            <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+              <div className="flex items-center gap-2">
+                <Flame className="h-3.5 w-3.5 text-[var(--color-neon-orange)]" />
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+                  Hotspot Intelligence
+                </span>
+                <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  top 6 of {stats?.hotspotAlerts ?? 0}
+                </span>
               </div>
-            ))
-          )}
-        </div>
-      </motion.aside>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                  <Activity className="h-3 w-3 text-primary" /> updated 12s ago
+                </div>
+                <button
+                  onClick={() => setHotspotsCollapsed(true)}
+                  aria-label="Collapse Hotspot Intelligence panel"
+                  className="grid h-6 w-6 place-items-center rounded-md text-muted-foreground hover:bg-surface-elevated hover:text-foreground transition-colors"
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-px overflow-hidden bg-border md:grid-cols-3 lg:grid-cols-6">
+              {hotspotsLoading ? (
+                <>
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                </>
+              ) : hotspotsError ? (
+                <div className="col-span-full grid place-items-center p-4 text-center text-sm text-muted-foreground">
+                  <div>
+                    <AlertTriangle className="mx-auto h-6 w-6 text-destructive" />
+                    <p className="mt-2 text-xs font-semibold text-foreground">
+                      Failed to load hotspots
+                    </p>
+                    <button
+                      onClick={() => hotspotsRefetch()}
+                      aria-label="Retry loading hotspots"
+                      className="mt-3 rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-surface-elevated"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              ) : hotspotRows.length === 0 && !hotspotsLoading ? (
+                <div className="col-span-full p-4 text-center text-xs text-muted-foreground">
+                  No hotspot data available
+                </div>
+              ) : (
+                hotspotRows.map((h) => (
+                  <div
+                    key={h.id}
+                    className="group relative bg-surface/40 px-3.5 py-3 transition-colors hover:bg-surface-elevated"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                        #{h.rank}
+                      </span>
+                      <span
+                        className={`flex items-center gap-0.5 text-[10px] font-semibold ${
+                          h.trend === "up"
+                            ? "text-[var(--color-neon-orange)]"
+                            : "text-[var(--color-neon-lime)]"
+                        }`}
+                      >
+                        {h.trend === "up" ? (
+                          <TrendingUp className="h-3 w-3" />
+                        ) : (
+                          <TrendingDown className="h-3 w-3" />
+                        )}
+                        {Math.abs(h.change)}%
+                      </span>
+                    </div>
+                    <div className="mt-1.5 truncate text-sm font-semibold text-foreground">
+                      {h.zone}
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${h.risk}%`,
+                            background:
+                              h.risk > 80
+                                ? "var(--color-neon-red)"
+                                : h.risk > 60
+                                  ? "var(--color-neon-orange)"
+                                  : "var(--color-neon-cyan)",
+                          }}
+                        />
+                      </div>
+                      <span className="font-mono text-[10px] font-semibold text-foreground">
+                        {h.risk}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-[10px] text-muted-foreground">
+                      {h.cluster} events · cluster
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       <EventDrawer />
     </div>
