@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import analytics, events, hotspots, stats, triage
 from app.services.csv_loader import dataset_path, load_events_dataframe
-from app.utils.config import DEFAULT_CORS_ORIGINS
+from app.utils.config import get_cors_origins
 
 
 @asynccontextmanager
@@ -26,7 +26,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=DEFAULT_CORS_ORIGINS,
+    allow_origins=get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

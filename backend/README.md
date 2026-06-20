@@ -44,8 +44,16 @@ utils/    → CSV path config + value mappers
 
 ## Frontend integration
 
-Set in `frontend/.env`:
+Copy `frontend/.env.example` to `frontend/.env` for local dev:
 
 ```
 VITE_API_URL=http://localhost:8000
+```
+
+For production, set `VITE_API_URL` in your frontend host (Lovable/Vercel) at **build time** to your Render backend URL (no trailing slash, no `/api` suffix).
+
+On Render, set backend env `CORS_ORIGINS` to your deployed frontend URL(s), comma-separated:
+
+```
+CORS_ORIGINS=https://your-frontend.example.com
 ```
