@@ -3,8 +3,9 @@ import { useEvents } from "@/hooks/useEvents";
 import type { TrafficEvent } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { priorityHex } from "@/lib/store";
+import { getIncidentImage } from "@/lib/incidentImages";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, MapPin, Clock, ChevronDown, Sparkles, Download, X, AlertTriangle, CarFront, Wrench, Cone, Waves, TreePine, Zap, AlertCircle } from "lucide-react";
+import { Search, Filter, MapPin, Clock, ChevronDown, Sparkles, Download, X, AlertTriangle } from "lucide-react";
 
 const priorities = ["critical", "high", "medium", "low"];
 
@@ -51,7 +52,7 @@ export function EventExplorer() {
         <div className="mt-3 sm:mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <div className="flex h-10 w-full items-center gap-2 rounded-lg border border-border bg-input/40 px-3 text-sm sm:max-w-md">
             <Search className="h-4 w-4 text-muted-foreground" />
-          <input
+            <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search by code, cause, zone…"
@@ -205,28 +206,22 @@ function CauseDropdown({ active, onChange }: { active: string | null; onChange: 
   );
 }
 
-function getIncidentIcon(cause: string) {
-  const c = cause.toLowerCase();
-  if (c.includes("accident")) return CarFront;
-  if (c.includes("breakdown")) return Wrench;
-  if (c.includes("construction")) return Cone;
-  if (c.includes("water")) return Waves;
-  if (c.includes("tree")) return TreePine;
-  if (c.includes("signal")) return Zap;
-  if (c.includes("congestion")) return CarFront;
-  if (c.includes("hole")) return AlertCircle;
-  return AlertTriangle;
-}
+function IncidentBanner({ cause }: { cause: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const src = getIncidentImage(cause);
 
-function IncidentThumbnail({ cause, priority }: { cause: string; priority: string }) {
-  const Icon = getIncidentIcon(cause);
-  const color = priorityHex(priority);
   return (
-    <div 
-      className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-border"
-      style={{ background: color + "15", color: color }}
-    >
-      <Icon className="h-6 w-6 opacity-80" />
+    <div className="relative mb-3 h-52 w-full overflow-hidden rounded-lg bg-surface-elevated/40">
+      {!loaded && <Skeleton className="absolute inset-0 z-10 h-full w-full" />}
+      <img
+        src={src}
+        alt={`Visual context for ${cause}`}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        className={`h-full w-full object-cover transition-all duration-700 ease-out hover:scale-105 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </div>
   );
 }
@@ -238,22 +233,17 @@ function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boole
       onClick={onToggle}
       className="group flex flex-col rounded-xl border border-border bg-surface/60 p-4 text-left backdrop-blur-xl transition-colors hover:border-primary/30 hover:bg-surface-elevated/80"
     >
-      <div className="flex items-start gap-3">
-        <IncidentThumbnail cause={e.cause} priority={e.priority} />
-        <div className="flex-1">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{e.code}</div>
-              <div className="mt-0.5 text-base font-semibold text-foreground">{e.cause}</div>
-            </div>
-            <span
-              className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-              style={{ background: priorityHex(e.priority) + "22", color: priorityHex(e.priority) }}
-            >
-              {e.priority}
-            </span>
-          </div>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{e.code}</div>
+          <div className="mt-0.5 text-base font-semibold text-foreground">{e.cause}</div>
         </div>
+        <span
+          className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+          style={{ background: priorityHex(e.priority) + "22", color: priorityHex(e.priority) }}
+        >
+          {e.priority}
+        </span>
       </div>
       <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
         <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {e.zone}</span>
@@ -272,6 +262,7 @@ function EventCard({ e, expanded, onToggle }: { e: TrafficEvent; expanded: boole
             exit={{ opacity: 0, height: 0 }}
             className="mt-3 overflow-hidden border-t border-border pt-3"
           >
+            <IncidentBanner cause={e.cause} />
             <p className="text-xs text-muted-foreground">{e.description}</p>
             <div className="mt-2 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/[0.06] p-2">
               <Sparkles className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
