@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useTriage } from "@/hooks/useTriage";
 import type { TriageResponse } from "@/types";
+import { useCommandStore } from "@/lib/store";
 import { toast } from "sonner";
 
 // TODO: fetch from /api/config
@@ -52,6 +53,14 @@ export function AITriage() {
   }, []);
 
   const triage = useTriage();
+  const setLastAiInsights = useCommandStore((s) => s.setLastAiInsights);
+
+  // Push Gemini insights to the global store so Command Center can display them
+  useEffect(() => {
+    if (triage.data?.aiInsights) {
+      setLastAiInsights(triage.data.aiInsights);
+    }
+  }, [triage.data, setLastAiInsights]);
 
   function run() {
     const latNum = parseFloat(form.lat);
@@ -300,6 +309,58 @@ export function AITriage() {
                   ))}
                 </div>
               </div>
+
+              {/* ── Gemini AI Operational Insights ── */}
+              {result.aiInsights ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-5"
+                >
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-primary">
+                    <Brain className="h-3 w-3" /> AI Operational Insights
+                  </div>
+                  <div className="mt-3 space-y-3">
+                    <div>
+                      <div className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                        Incident Summary
+                      </div>
+                      <p className="mt-1 text-sm text-foreground leading-relaxed">
+                        {result.aiInsights.incident_summary}
+                      </p>
+                    </div>
+                    <div className="h-px bg-border/50" />
+                    <div>
+                      <div className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                        Traffic Impact
+                      </div>
+                      <p className="mt-1 text-sm text-foreground leading-relaxed">
+                        {result.aiInsights.traffic_impact}
+                      </p>
+                    </div>
+                    <div className="h-px bg-border/50" />
+                    <div>
+                      <div className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                        Recommended Action
+                      </div>
+                      <p className="mt-1 text-sm text-foreground leading-relaxed">
+                        {result.aiInsights.recommended_action}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                /* Fallback when Gemini is unavailable */
+                <div className="rounded-2xl border border-border bg-surface/40 p-4">
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <Brain className="h-3 w-3" /> AI Operational Insights
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    AI insights unavailable — follow standard operating procedure.
+                  </p>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

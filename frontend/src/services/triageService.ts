@@ -79,6 +79,8 @@ export function mapTriageApiToUiResponse(
       { k: "Priority confidence", v: `${api.priorityConfidence}%` },
       { k: "Closure required", v: api.closureRequired ? "Yes" : "No" },
     ],
+    // Pass Gemini insights through (null/undefined when unavailable)
+    aiInsights: api.ai_insights ?? null,
   };
 }
 

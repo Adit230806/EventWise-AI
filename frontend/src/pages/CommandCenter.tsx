@@ -49,6 +49,7 @@ export function CommandCenter() {
     toggleAlerts,
     toggleHotspots,
     setDrawerEvent,
+    lastAiInsights,
   } = useCommandStore();
 
   // Panel collapse state
@@ -375,12 +376,26 @@ export function CommandCenter() {
                 <Sparkles className="h-3.5 w-3.5 text-primary" />
                 <span className="uppercase tracking-[0.18em]">Recommended Action</span>
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-foreground">
-                <span className="font-semibold text-primary">Pre-empt signal cycle</span> at Hebbal
-                Junction and divert northbound freight via{" "}
-                <span className="font-mono text-xs">ORR-N → NH-44</span>. Expected congestion drop
-                <span className="font-semibold text-foreground"> 34%</span> within 25 min.
-              </p>
+              {lastAiInsights ? (
+                <>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground">
+                    {lastAiInsights.recommended_action}
+                  </p>
+                  {lastAiInsights.traffic_impact && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      <span className="font-semibold text-foreground">Impact: </span>
+                      {lastAiInsights.traffic_impact}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="mt-2 text-sm leading-relaxed text-foreground">
+                  <span className="font-semibold text-primary">Pre-empt signal cycle</span> at Hebbal
+                  Junction and divert northbound freight via{" "}
+                  <span className="font-mono text-xs">ORR-N → NH-44</span>. Expected congestion drop
+                  <span className="font-semibold text-foreground"> 34%</span> within 25 min.
+                </p>
+              )}
               <div className="mt-3 flex gap-2">
                 <button aria-label="Execute recommended traffic plan" className="flex-1 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
                   Execute Plan

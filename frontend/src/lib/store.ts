@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { TrafficEvent } from "@/types";
+import type { AiInsights } from "@/types/triage";
 
 interface CommandState {
   selectedEventId: string | null;
@@ -16,6 +17,9 @@ interface CommandState {
   toggleHotspots: () => void;
   drawerEvent: TrafficEvent | null;
   setDrawerEvent: (e: TrafficEvent | null) => void;
+  /** Latest Gemini AI insights from the triage page — shared with Command Center. */
+  lastAiInsights: AiInsights | null;
+  setLastAiInsights: (insights: AiInsights | null) => void;
 }
 
 export const useCommandStore = create<CommandState>((set) => ({
@@ -33,6 +37,8 @@ export const useCommandStore = create<CommandState>((set) => ({
   toggleHotspots: () => set((s) => ({ showHotspots: !s.showHotspots })),
   drawerEvent: null,
   setDrawerEvent: (e) => set({ drawerEvent: e }),
+  lastAiInsights: null,
+  setLastAiInsights: (insights) => set({ lastAiInsights: insights }),
 }));
 
 export const priorityColor = (p: string) => {

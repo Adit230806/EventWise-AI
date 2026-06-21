@@ -18,13 +18,22 @@ export interface TriageApiRequest {
   longitude: number;
 }
 
-/** Raw response from POST /api/triage. */
+/** Gemini-generated operational insights from the backend. */
+export interface AiInsights {
+  incident_summary: string;
+  traffic_impact: string;
+  recommended_action: string;
+}
+
+/** Raw response from POST /api/triage (includes optional Gemini insights). */
 export interface TriageApiResponse {
   priorityLabel: string;
   priorityConfidence: number;
   closureRequired: boolean;
   closureProbability: number;
   recommendedAction: string;
+  /** Present when Gemini is reachable; null/undefined otherwise. */
+  ai_insights?: AiInsights | null;
 }
 
 export interface TriageSignal {
@@ -41,4 +50,6 @@ export interface TriageResponse {
   eta: string;
   response: string;
   signals: TriageSignal[];
+  /** Gemini AI insights — present when Gemini is available. */
+  aiInsights?: AiInsights | null;
 }
