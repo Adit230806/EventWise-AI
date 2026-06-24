@@ -383,7 +383,7 @@ npm run dev
 | 🌐 **Live Demo** | https://event-wise-ai-eight.vercel.app |
 | 📖 **API Documentation** | https://eventwise-ai-1.onrender.com/docs |
 | 🐙 **GitHub Repository** | https://github.com/Adit230806/EventWise-AI |
-| 🎥 **Demo Video** | *(link to be added)* |
+| 🎥 **Demo Video** | https://youtu.be/yyFeX0MPcDs |
 
 ---
 
